@@ -1,0 +1,51 @@
+<div
+  class="metric-card helm-panel"
+  [class.flash]="flashActive()"
+  [class.threshold-warning]="thresholdStatus === 'warning'"
+  [class.threshold-critical]="thresholdStatus === 'critical'"
+  role="figure"
+  [attr.aria-label]="meta.label + ': ' + displayValue + ' ' + meta.unit"
+>
+
+  <!-- ── Header row: label + status dot ── -->
+  <div class="card-header">
+    <span class="card-label">{{ meta.label }}</span>
+    <span
+      class="status-dot"
+      [class.dot-healthy]="thresholdStatus === 'healthy'"
+      [class.dot-warning]="thresholdStatus === 'warning'"
+      [class.dot-critical]="thresholdStatus === 'critical'"
+      [attr.aria-label]="thresholdStatus"
+    ></span>
+  </div>
+
+  <!-- ── Value display ── -->
+  <div class="card-body">
+    @if (showGauge && threshold) {
+      <!-- Gauge mode (battery, thrust) -->
+      <div class="card-gauge">
+        <helm-gauge
+          [value]="value"
+          [threshold]="threshold"
+          [unit]="meta.unit"
+          [decimals]="meta.decimals"
+        />
+      </div>
+    } @else {
+      <!-- Numeric mode (all other sensors) -->
+      <div class="card-value-wrap" [helmThresholdColor]="thresholdStatus">
+        <span class="card-value font-mono">{{ displayValue }}</span>
+        <span class="card-unit">{{ meta.unit }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- ── Sparkline ── -->
+  <div class="card-sparkline">
+    <helm-sparkline
+      [values]="sparklineValues"
+      [threshold]="threshold"
+    />
+  </div>
+
+</div>

@@ -87,6 +87,12 @@ export class AlertService {
           this.loadAlertFromServer(event.data['alertId'] as string);
         }
       });
+
+    // 3. Auto-evaluate thresholds for ALL vehicles continuously.
+    // This replaces the need for any component to call processFrame() manually.
+    this.telemetryService.allVehicleTelemetry$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((frame) => this.processFrame(frame));
   }
 
   // ── Public threshold evaluation API ───────────────────

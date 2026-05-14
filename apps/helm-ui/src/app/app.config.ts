@@ -1,6 +1,6 @@
 import {
   ApplicationConfig,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import {
@@ -22,7 +22,7 @@ import { errorInterceptor }   from './core/interceptors/error.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideClientHydration(withEventReplay()),
     provideRouter(
       routes,

@@ -1,0 +1,234 @@
+<div class="dashboard-wrapper">
+
+  @if (vm$ | async; as vm) {
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         HEADER BAR — Vehicle identity, GPS, mission progress
+         ════════════════════════════════════════════════════════════════ -->
+    <header class="dashboard-header helm-panel">
+
+      <!-- Left: vehicle identity -->
+      <div class="header-identity">
+        <div class="header-vehicle-name font-display">{{ vm.vehicle.name }}</div>
+        <div class="header-badges">
+          <span class="type-badge">{{ vm.vehicle.type }}</span>
+          <helm-status-badge [status]="vm.vehicle.status" />
+        </div>
+      </div>
+
+      <!-- Center: GPS coordinates -->
+      <div class="header-gps">
+        @if (vm.frame?.gps; as gps) {
+          <div class="gps-status gps-locked">
+            <span class="gps-indicator-dot"></span>
+            <span class="gps-label">GPS LOCK</span>
+          </div>
+          <div class="gps-coords font-mono">
+            {{ gps.lat | number:'1.4-4' }}°N
+            &nbsp;·&nbsp;
+            {{ gps.lng | number:'1.4-4' }}°E
+          </div>
+        } @else {
+          <div class="gps-status gps-none">
+            <span class="gps-label">NO GPS SIGNAL</span>
+          </div>
+          @if (vm.frame) {
+            <div class="gps-submerged font-mono">
+              SUBMERGED &nbsp;·&nbsp; {{ vm.frame.depth | nauticalUnits:'depth' }}
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Right: mission info + last ping -->
+      <div class="header-mission">
+        @if (vm.mission) {
+          <div class="mission-name font-display">{{ vm.mission.name }}</div>
+          <div class="mission-progress-track">
+            <div
+              class="mission-progress-fill"
+              [style.width.%]="vm.frame?.missionProgress ?? 0"
+              [class.fill-warning]="(vm.frame?.missionProgress ?? 0) > 85"
+            ></div>
+          </div>
+          <div class="mission-meta font-mono">
+            <span>{{ vm.frame?.missionProgress ?? 0 | number:'1.0-0' }}%</span>
+            <span class="meta-sep">·</span>
+            <span>{{ vm.mission.startedAt | missionDuration }}</span>
+          </div>
+        } @else {
+          <div class="no-mission-label">No active mission</div>
+        }
+        <div class="last-ping font-mono">
+          LAST PING &nbsp; {{ vm.vehicle.lastPingAt | timeAgo }}
+        </div>
+      </div>
+
+    </header>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MAIN CONTENT GRID
+         ════════════════════════════════════════════════════════════════ -->
+    <div class="dashboard-content">
+
+      <!-- ── Metric + sparkline section (fluid columns) ── -->
+      <section class="metric-section">
+
+        @if (vm.frame; as frame) {
+
+          <!-- 3×3 metric card grid -->
+          <div class="metric-grid">
+
+            <!-- Row 1: Navigation -->
+            <helm-metric-card
+              sensor="depth"
+              [value]="frame.depth"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.depth"
+            />
+            <helm-metric-card
+              sensor="heading"
+              [value]="frame.heading"
+              [frames]="vm.buffer"
+              [threshold]="noThreshold"
+            />
+            <helm-metric-card
+              sensor="speed"
+              [value]="frame.speed"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.speed"
+            />
+
+            <!-- Row 2: Power + thermal -->
+            <helm-metric-card
+              sensor="battery"
+              [value]="frame.battery"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.battery"
+              [showGauge]="true"
+            />
+            <helm-metric-card
+              sensor="thrust"
+              [value]="frame.thrust"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.thrust"
+              [showGauge]="true"
+            />
+            <helm-metric-card
+              sensor="waterTemp"
+              [value]="frame.waterTemp"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.waterTemp"
+            />
+
+            <!-- Row 3: Orientation -->
+            <helm-metric-card
+              sensor="pressure"
+              [value]="frame.pressure"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.pressure"
+            />
+            <helm-metric-card
+              sensor="roll"
+              [value]="frame.roll"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.roll"
+            />
+            <helm-metric-card
+              sensor="pitch"
+              [value]="frame.pitch"
+              [frames]="vm.buffer"
+              [threshold]="thresholds.pitch"
+            />
+
+          </div>
+
+          <!-- Multi-channel sparkline row -->
+          <div class="sparkline-panel helm-panel">
+            <div class="sparkline-panel-header">
+              <span class="sparkline-title font-mono">LIVE TRACE — LAST 60s</span>
+              <div class="sparkline-legend">
+                <span class="legend-item legend-depth">DEPTH</span>
+                <span class="legend-item legend-battery">BATTERY</span>
+                <span class="legend-item legend-speed">SPEED</span>
+              </div>
+            </div>
+            <div class="sparkline-channels">
+              <div class="sparkline-channel">
+                <span class="channel-label font-mono">DEPTH</span>
+                <div class="channel-chart">
+                  <helm-sparkline
+                    [values]="vm.buffer | frameValues:'depth'"
+                    [threshold]="thresholds.depth"
+                  />
+                </div>
+                <span class="channel-value font-mono">
+                  {{ frame.depth | nauticalUnits:'depth' }}
+                </span>
+              </div>
+              <div class="sparkline-channel">
+                <span class="channel-label font-mono">BATTERY</span>
+                <div class="channel-chart">
+                  <helm-sparkline
+                    [values]="vm.buffer | frameValues:'battery'"
+                    [threshold]="thresholds.battery"
+                  />
+                </div>
+                <span class="channel-value font-mono">
+                  {{ frame.battery | nauticalUnits:'battery' }}
+                </span>
+              </div>
+              <div class="sparkline-channel">
+                <span class="channel-label font-mono">SPEED</span>
+                <div class="channel-chart">
+                  <helm-sparkline
+                    [values]="vm.buffer | frameValues:'speed'"
+                    [threshold]="thresholds.speed"
+                  />
+                </div>
+                <span class="channel-value font-mono">
+                  {{ frame.speed | nauticalUnits:'speed' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+        } @else {
+          <!-- Pre-telemetry loading state -->
+          <div class="awaiting-telemetry">
+            <div class="await-pulse"></div>
+            <p class="font-mono">AWAITING TELEMETRY · {{ vm.vehicle.name }}</p>
+          </div>
+        }
+
+      </section>
+
+      <!-- ── Right sidebar placeholder (Batch 5) ── -->
+      <aside class="dashboard-sidebar">
+        <div class="sidebar-placeholder helm-panel">
+          <p class="placeholder-title font-display">Orientation</p>
+          <p class="placeholder-sub font-mono">CSS 3D — Batch 5</p>
+          <div class="orient-stub">
+            <div class="orient-ring"></div>
+            <div class="orient-body"></div>
+          </div>
+        </div>
+        <div class="sidebar-fleet-stub helm-panel">
+          <p class="placeholder-title font-display">Fleet Panel</p>
+          <p class="placeholder-sub font-mono">Vehicle cards — Batch 5</p>
+        </div>
+      </aside>
+
+    </div>
+
+  } @else {
+    <!-- Initial loading state before vm$ emits -->
+    <div class="dashboard-loading">
+      <div class="loading-pulse"></div>
+      <p class="font-mono" style="color: var(--color-text-secondary)">
+        CONNECTING TO HELM SERVER...
+      </p>
+    </div>
+  }
+
+</div>

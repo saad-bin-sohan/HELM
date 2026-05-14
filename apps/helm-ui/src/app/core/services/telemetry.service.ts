@@ -12,7 +12,7 @@ export class TelemetryService {
   // ── Derived streams ────────────────────────────────────
 
   /** All telemetry messages from all vehicles. */
-  private readonly allTelemetry$ = this.ws.messages$.pipe(
+  readonly allVehicleTelemetry$ = this.ws.messages$.pipe(
     filter((msg): msg is WsMessage & { type: 'telemetry' } => msg.type === 'telemetry'),
     map((msg) => msg.payload as TelemetryFrame),
     share(),
@@ -31,7 +31,7 @@ export class TelemetryService {
    * Perfect for effects and computed() that need synchronous current values.
    */
   readonly latestFrames: Signal<ReadonlyMap<string, TelemetryFrame>> = toSignal(
-    this.allTelemetry$.pipe(
+    this.allVehicleTelemetry$.pipe(
       scan(
         (acc, frame) => new Map(acc).set(frame.vehicleId, frame),
         new Map<string, TelemetryFrame>(),
@@ -47,7 +47,7 @@ export class TelemetryService {
    * Shared — multiple subscribers to the same vehicleId share one filter pipe.
    */
   telemetry$(vehicleId: string): Observable<TelemetryFrame> {
-    return this.allTelemetry$.pipe(
+    return this.allVehicleTelemetry$.pipe(
       filter((frame) => frame.vehicleId === vehicleId),
       share(),
     );
