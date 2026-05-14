@@ -49,18 +49,33 @@
   <!-- Spacer -->
   <div class="sidebar-spacer"></div>
 
-  <!-- Alert indicator (badge — wired up in Batch 3) -->
-  <div
+  <!-- Alert badge indicator — live count from AlertService -->
+  <a
     class="nav-item alert-indicator"
-    [matTooltip]="expanded ? '' : 'Alerts'"
+    routerLink="/settings"
+    [matTooltip]="expanded ? '' : (alertService.unacknowledgedCount() + ' alerts')"
     matTooltipPosition="right"
+    matRipple
+    [matBadge]="alertService.unacknowledgedCount() > 0 ? alertService.unacknowledgedCount() : null"
+    matBadgeColor="warn"
+    matBadgeSize="small"
+    matBadgePosition="above after"
   >
     <span class="nav-icon">
-      <lucide-angular name="bell" [size]="18" />
+      <lucide-angular
+        name="bell"
+        [size]="18"
+        [class.text-critical]="alertService.unacknowledgedCount() > 0"
+      />
     </span>
     @if (expanded) {
-      <span class="nav-label">Alerts</span>
+      <span class="nav-label">
+        Alerts
+        @if (alertService.unacknowledgedCount() > 0) {
+          <span class="alert-count-badge">{{ alertService.unacknowledgedCount() }}</span>
+        }
+      </span>
     }
-  </div>
+  </a>
 
 </aside>

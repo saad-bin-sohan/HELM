@@ -5,36 +5,80 @@
     <lucide-angular name="menu" [size]="18" />
   </button>
 
-  <!-- Center: app title -->
-  <div class="top-bar-title">
-    <span class="font-display">
+  <!-- Vehicle selector -->
+  <div class="vehicle-selector-wrap">
+    <mat-select
+      class="vehicle-select"
+      [value]="fleetService.selectedVehicleId()"
+      (selectionChange)="onVehicleChange($event.value)"
+      aria-label="Select active vehicle"
+    >
+      @for (vehicle of (vehicles$ | async) ?? []; track vehicle.id) {
+        <mat-option [value]="vehicle.id">
+          <span class="vehicle-option">
+            <span class="vehicle-type-badge">{{ vehicle.type }}</span>
+            {{ vehicle.name }}
+          </span>
+        </mat-option>
+      }
+    </mat-select>
+  </div>
+
+  <!-- Center spacer -->
+  <div class="top-bar-spacer">
+    <span class="app-tagline font-display">
       HELM&nbsp;&nbsp;·&nbsp;&nbsp;Autonomous Vehicle Operations
     </span>
   </div>
 
-  <!-- Right: connection status -->
+  <!-- Right: status indicators -->
   <div class="top-bar-actions">
 
-    <!-- Connection chip -->
-    <div class="connection-chip" [ngClass]="connectionStatus">
-      @switch (connectionStatus) {
+    <!-- Alert badge -->
+    <button
+      class="icon-btn"
+      aria-label="Alerts"
+      [matBadge]="alertCount() > 0 ? alertCount() : null"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      [matTooltip]="alertCount() + ' unacknowledged alerts'"
+    >
+      <lucide-angular name="bell" [size]="16" />
+    </button>
+
+    <!-- Connection status chip -->
+    <div
+      class="connection-chip"
+      [class.live]="connectionState().status === 'live'"
+      [class.reconnecting]="connectionState().status === 'reconnecting'"
+      [class.offline]="connectionState().status === 'offline'"
+      [class.connecting]="connectionState().status === 'connecting'"
+      [matTooltip]="'WS ' + connectionState().status + ' · ' + connectionState().reconnectCount + ' reconnects'"
+    >
+      @switch (connectionState().status) {
         @case ('live') {
-          <lucide-angular name="wifi" [size]="12" />
+          <lucide-angular name="wifi" [size]="11" />
           <span>LIVE</span>
         }
         @case ('reconnecting') {
-          <lucide-angular name="refresh-cw" [size]="12" class="spin" />
+          <lucide-angular name="refresh-cw" [size]="11" class="spin" />
           <span>RECONNECTING</span>
         }
-        @case ('offline') {
-          <lucide-angular name="wifi-off" [size]="12" />
+        @case ('connecting') {
+          <lucide-angular name="refresh-cw" [size]="11" class="spin" />
+          <span>CONNECTING</span>
+        }
+        @default {
+          <lucide-angular name="wifi-off" [size]="11" />
           <span>OFFLINE</span>
         }
       }
     </div>
 
-    <!-- Last ping indicator (wired in Batch 3) -->
-    <span class="last-ping font-mono">--:--:--</span>
+    <!-- Connection since timestamp -->
+    <span class="last-ping font-mono">
+      {{ connectionState().since | timeAgo }}
+    </span>
 
   </div>
 </header>

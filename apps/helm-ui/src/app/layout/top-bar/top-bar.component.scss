@@ -2,17 +2,19 @@
   height: var(--topbar-h);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px;
+  gap: 10px;
+  padding: 0 14px;
   background-color: var(--color-surface-panel);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
   z-index: 50;
 }
 
+// ── Icon button ────────────────────────────────────────────
 .icon-btn {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,6 +24,7 @@
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: color var(--transition-fast), background var(--transition-fast);
+  padding: 0;
   flex-shrink: 0;
 
   &:hover {
@@ -30,39 +33,87 @@
   }
 }
 
-.top-bar-title {
+// ── Vehicle selector ───────────────────────────────────────
+.vehicle-selector-wrap {
+  flex-shrink: 0;
+}
+
+.vehicle-select {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-md);
+  padding: 0 8px;
+  min-width: 180px;
+
+  // Override Material defaults to match HELM dark theme
+  ::ng-deep .mat-mdc-select-value {
+    color: var(--color-accent);
+  }
+}
+
+.vehicle-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vehicle-type-badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  letter-spacing: 0.05em;
+}
+
+// ── Center spacer + tagline ─────────────────────────────────
+.top-bar-spacer {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-primary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.6;
   overflow: hidden;
+  min-width: 0;
 }
 
+.app-tagline {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.7;
+}
+
+// ── Right actions cluster ───────────────────────────────────
 .top-bar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
-// Connection chip
+// ── Connection chip ─────────────────────────────────────────
 .connection-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
+  gap: 4px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
-  font-size: 0.625rem;
+  font-size: 0.5625rem;
   font-family: var(--font-mono);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   border: 1px solid;
+  white-space: nowrap;
+  cursor: default;
 
   &.live {
     color: var(--color-healthy);
@@ -70,7 +121,8 @@
     background: var(--color-healthy-dim);
   }
 
-  &.reconnecting {
+  &.reconnecting,
+  &.connecting {
     color: var(--color-warning);
     border-color: rgba(245, 158, 11, 0.4);
     background: var(--color-warning-dim);
@@ -84,7 +136,7 @@
 }
 
 .spin {
-  animation: spin 1.2s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -92,6 +144,8 @@
 }
 
 .last-ping {
+  font-size: 0.625rem;
   color: var(--color-text-disabled);
-  font-size: 0.75rem;
+  letter-spacing: 0.04em;
 }
+

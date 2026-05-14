@@ -13,13 +13,11 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {
-  provideHttpClient,
-  withFetch,
-  withInterceptors,
-} from '@angular/common/http';
-import { routes } from './app.routes';
+import { provideAnimationsAsync }     from '@angular/platform-browser/animations/async';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { routes }             from './app.routes';
+import { loggingInterceptor } from './core/interceptors/logging.interceptor';
+import { errorInterceptor }   from './core/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,7 +33,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([]),  // Interceptors added in Batch 3
+      withInterceptors([loggingInterceptor, errorInterceptor]),
     ),
   ],
 };
+
