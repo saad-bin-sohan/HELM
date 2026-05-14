@@ -1,0 +1,97 @@
+.helm-top-bar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background-color: var(--color-surface-panel);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-text-primary);
+    background: var(--color-surface-raised);
+  }
+}
+
+.top-bar-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  overflow: hidden;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+// Connection chip
+.connection-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: 1px solid;
+
+  &.live {
+    color: var(--color-healthy);
+    border-color: rgba(16, 185, 129, 0.4);
+    background: var(--color-healthy-dim);
+  }
+
+  &.reconnecting {
+    color: var(--color-warning);
+    border-color: rgba(245, 158, 11, 0.4);
+    background: var(--color-warning-dim);
+  }
+
+  &.offline {
+    color: var(--color-offline);
+    border-color: rgba(107, 114, 128, 0.35);
+    background: var(--color-offline-dim);
+  }
+}
+
+.spin {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.last-ping {
+  color: var(--color-text-disabled);
+  font-size: 0.75rem;
+}

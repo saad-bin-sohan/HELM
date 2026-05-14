@@ -1,0 +1,40 @@
+<header class="helm-top-bar">
+
+  <!-- Left: menu toggle -->
+  <button class="icon-btn menu-btn" (click)="menuToggled.emit()" aria-label="Toggle sidebar">
+    <lucide-angular name="menu" [size]="18" />
+  </button>
+
+  <!-- Center: app title -->
+  <div class="top-bar-title">
+    <span class="font-display">
+      HELM&nbsp;&nbsp;·&nbsp;&nbsp;Autonomous Vehicle Operations
+    </span>
+  </div>
+
+  <!-- Right: connection status -->
+  <div class="top-bar-actions">
+
+    <!-- Connection chip -->
+    <div class="connection-chip" [ngClass]="connectionStatus">
+      @switch (connectionStatus) {
+        @case ('live') {
+          <lucide-angular name="wifi" [size]="12" />
+          <span>LIVE</span>
+        }
+        @case ('reconnecting') {
+          <lucide-angular name="refresh-cw" [size]="12" class="spin" />
+          <span>RECONNECTING</span>
+        }
+        @case ('offline') {
+          <lucide-angular name="wifi-off" [size]="12" />
+          <span>OFFLINE</span>
+        }
+      }
+    </div>
+
+    <!-- Last ping indicator (wired in Batch 3) -->
+    <span class="last-ping font-mono">--:--:--</span>
+
+  </div>
+</header>

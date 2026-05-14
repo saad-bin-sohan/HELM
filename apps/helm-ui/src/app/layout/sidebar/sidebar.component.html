@@ -1,0 +1,66 @@
+<aside class="helm-sidebar" [class.expanded]="expanded" role="navigation" aria-label="Main navigation">
+
+  <!-- Brand / Logo -->
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <lucide-angular name="anchor" [size]="20" />
+    </div>
+    @if (expanded) {
+      <span class="brand-name font-display">HELM</span>
+    }
+  </div>
+
+  <!-- Toggle button -->
+  <button
+    class="sidebar-toggle"
+    (click)="toggleExpanded.emit()"
+    [attr.aria-label]="expanded ? 'Collapse sidebar' : 'Expand sidebar'"
+    matRipple
+  >
+    <lucide-angular
+      name="chevron-right"
+      [size]="16"
+      class="toggle-icon"
+      [class.rotated]="expanded"
+    />
+  </button>
+
+  <!-- Navigation items -->
+  <nav class="sidebar-nav">
+    @for (item of navItems; track item.route) {
+      <a
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [matTooltip]="expanded ? '' : item.tooltip"
+        matTooltipPosition="right"
+        matRipple
+      >
+        <span class="nav-icon">
+          <lucide-angular [name]="item.iconName" [size]="18" />
+        </span>
+        @if (expanded) {
+          <span class="nav-label">{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <!-- Spacer -->
+  <div class="sidebar-spacer"></div>
+
+  <!-- Alert indicator (badge — wired up in Batch 3) -->
+  <div
+    class="nav-item alert-indicator"
+    [matTooltip]="expanded ? '' : 'Alerts'"
+    matTooltipPosition="right"
+  >
+    <span class="nav-icon">
+      <lucide-angular name="bell" [size]="18" />
+    </span>
+    @if (expanded) {
+      <span class="nav-label">Alerts</span>
+    }
+  </div>
+
+</aside>

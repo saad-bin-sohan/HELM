@@ -1,0 +1,14 @@
+<div class="helm-shell" [class.sidebar-expanded]="sidebarExpanded()">
+  <helm-sidebar
+    [expanded]="sidebarExpanded()"
+    (toggleExpanded)="toggleSidebar()"
+  />
+
+  <div class="helm-content-area">
+    <helm-top-bar (menuToggled)="toggleSidebar()" />
+
+    <main class="helm-main-scroll">
+      <router-outlet />
+    </main>
+  </div>
+</div>

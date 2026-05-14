@@ -1,0 +1,148 @@
+// ─── Tailwind CSS v4 ──────────────────────────────────────
+@import "tailwindcss";
+
+// ─── Angular Material M3 ─────────────────────────────────
+@use '@angular/material' as mat;
+
+// ─── Google Fonts ─────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400;1,9..40,500&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
+
+// ─── HELM Design Tokens ───────────────────────────────────
+:root {
+  // Surfaces
+  --color-surface-base:    #080E1A;
+  --color-surface-panel:   #0F1A2E;
+  --color-surface-raised:  #162340;
+  --color-border:          #1E3358;
+
+  // Text
+  --color-text-primary:    #E8F4FF;
+  --color-text-secondary:  #7A9ABF;
+  --color-text-disabled:   #3D5A7A;
+
+  // Semantic state colors
+  --color-accent:          #0EA5E9;
+  --color-accent-dim:      rgba(14, 165, 233, 0.15);
+  --color-healthy:         #10B981;
+  --color-healthy-dim:     rgba(16, 185, 129, 0.12);
+  --color-warning:         #F59E0B;
+  --color-warning-dim:     rgba(245, 158, 11, 0.12);
+  --color-critical:        #EF4444;
+  --color-critical-dim:    rgba(239, 68, 68, 0.12);
+  --color-offline:         #6B7280;
+  --color-offline-dim:     rgba(107, 114, 128, 0.12);
+
+  // Typography
+  --font-display:          'Space Grotesk', system-ui, sans-serif;
+  --font-ui:               'DM Sans', system-ui, sans-serif;
+  --font-mono:             'JetBrains Mono', 'Fira Code', monospace;
+
+  // Spacing & shape
+  --radius-sm:             4px;
+  --radius-md:             8px;
+  --radius-lg:             12px;
+  --radius-pill:           999px;
+
+  // Layout
+  --sidebar-collapsed-w:   56px;
+  --sidebar-expanded-w:    220px;
+  --topbar-h:              52px;
+
+  // Transitions
+  --transition-fast:       150ms ease;
+  --transition-base:       220ms ease;
+  --transition-slow:       350ms ease;
+}
+
+// ─── Material M3 Dark Theme ───────────────────────────────
+html {
+  color-scheme: dark;
+
+  @include mat.theme((
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    density: (scale: -1),
+  ));
+}
+
+// ─── Global Reset & Base ──────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--color-surface-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+// ─── Scrollbar Styling ────────────────────────────────────
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+
+  &:hover {
+    background: var(--color-text-disabled);
+  }
+}
+
+// ─── Typography Utilities ─────────────────────────────────
+.font-display { font-family: var(--font-display); }
+.font-ui      { font-family: var(--font-ui); }
+.font-mono    { font-family: var(--font-mono); }
+
+// ─── Status Color Utilities ───────────────────────────────
+.status-healthy  { color: var(--color-healthy); }
+.status-warning  { color: var(--color-warning); }
+.status-critical { color: var(--color-critical); }
+.status-offline  { color: var(--color-offline); }
+.status-accent   { color: var(--color-accent); }
+
+// ─── Panel Base ───────────────────────────────────────────
+.helm-panel {
+  background-color: var(--color-surface-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+// ─── Pulse Animations ─────────────────────────────────────
+@keyframes helm-pulse-warning {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+}
+
+@keyframes helm-pulse-critical {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  50%       { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+@keyframes helm-value-flash {
+  0%   { background-color: rgba(14, 165, 233, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.pulse-warning  { animation: helm-pulse-warning  1.8s ease-in-out infinite; }
+.pulse-critical { animation: helm-pulse-critical 1.2s ease-in-out infinite; }
+.value-flash    { animation: helm-value-flash    0.5s ease-out; }
