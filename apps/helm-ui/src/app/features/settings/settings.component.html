@@ -1,0 +1,145 @@
+<div class="settings-page">
+  <div class="settings-header">
+    <h1 class="font-display">Settings</h1>
+    @if (saveIndicator()) {
+      <span class="save-flash font-mono">✓ Saved</span>
+    }
+  </div>
+
+  <section class="settings-section helm-panel">
+    <button class="section-toggle" (click)="toggleSection('thresholds')">
+      <span class="section-title font-display">Alert Thresholds</span>
+      <span class="section-desc">Configure per-sensor warning and critical values. Changes apply immediately and persist across sessions.</span>
+      <lucide-angular [name]="isSectionExpanded('thresholds') ? 'chevron-up' : 'chevron-down'" [size]="16" />
+    </button>
+
+    @if (isSectionExpanded('thresholds')) {
+      <div class="threshold-table" [formGroup]="thresholdForm">
+        <div class="threshold-header-row">
+          <span class="col-sensor font-mono">SENSOR</span>
+          <span class="col-warning font-mono">WARNING</span>
+          <span class="col-critical font-mono">CRITICAL</span>
+          <span class="col-operator font-mono">TRIGGER</span>
+          <span class="col-reset"></span>
+        </div>
+
+        @for (row of sensorRows; track row.key) {
+          <div class="threshold-row" [formGroupName]="row.key">
+            <div class="col-sensor">
+              <span class="sensor-label">{{ row.label }}</span>
+              <span class="sensor-unit font-mono">{{ row.unit }}</span>
+            </div>
+            <div class="col-warning">
+              <mat-form-field appearance="outline" class="threshold-field">
+                <input matInput type="number" formControlName="warning" [min]="row.warningMin" [max]="row.warningMax" [step]="row.step" class="font-mono" />
+              </mat-form-field>
+            </div>
+            <div class="col-critical">
+              <mat-form-field appearance="outline" class="threshold-field">
+                <input matInput type="number" formControlName="critical" [min]="row.criticalMin" [max]="row.criticalMax" [step]="row.step" class="font-mono" />
+              </mat-form-field>
+            </div>
+            <div class="col-operator">
+              <span class="operator-badge font-mono">{{ row.operator }}</span>
+            </div>
+            <div class="col-reset">
+              <button mat-icon-button class="reset-btn" [matTooltip]="'Reset ' + row.label + ' to defaults'" (click)="resetSensor(row.key)">
+                <lucide-angular name="rotate-ccw" [size]="14" />
+              </button>
+            </div>
+          </div>
+        }
+
+        <div class="threshold-footer">
+          <button mat-stroked-button class="reset-all-btn" (click)="resetAll()">
+            <lucide-angular name="rotate-ccw" [size]="14" />
+            Reset All to Defaults
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="settings-section helm-panel">
+    <button class="section-toggle" (click)="toggleSection('audio')">
+      <span class="section-title font-display">Audio</span>
+      <span class="section-desc">Control alert sound notifications.</span>
+      <lucide-angular [name]="isSectionExpanded('audio') ? 'chevron-up' : 'chevron-down'" [size]="16" />
+    </button>
+
+    @if (isSectionExpanded('audio')) {
+      <div class="audio-section">
+        <div class="audio-row">
+          <div class="audio-label-group">
+            <lucide-angular [name]="soundMuted() ? 'volume-x' : 'volume-2'" [size]="18" />
+            <span class="audio-label">
+              {{ soundMuted() ? 'Sound alerts muted' : 'Sound alerts enabled' }}
+            </span>
+          </div>
+          <mat-slide-toggle [checked]="!soundMuted()" (change)="toggleMute()" color="primary" />
+        </div>
+        <p class="audio-hint font-mono">
+          When enabled, critical threshold crossings emit an audio beep. Requires browser autoplay permission.
+        </p>
+      </div>
+    }
+  </section>
+
+  <section class="settings-section helm-panel">
+    <button class="section-toggle" (click)="toggleSection('display')">
+      <span class="section-title font-display">Connection &amp; Display</span>
+      <span class="section-desc">WebSocket status, environment info, and server diagnostics.</span>
+      <lucide-angular [name]="isSectionExpanded('display') ? 'chevron-up' : 'chevron-down'" [size]="16" />
+    </button>
+
+    @if (isSectionExpanded('display')) {
+      <div class="display-section">
+        <div class="info-row">
+          <span class="info-label font-mono">WS STATUS</span>
+          <span class="connection-chip font-mono"
+            [class.chip-live]="connectionState().status === 'live'"
+            [class.chip-reconnecting]="connectionState().status === 'reconnecting'"
+            [class.chip-offline]="connectionState().status === 'offline'">
+            <lucide-angular [name]="connectionState().status === 'live' ? 'wifi' : 'wifi-off'" [size]="12" />
+            {{ connectionState().status | uppercase }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label font-mono">WS URL</span>
+          <span class="info-value font-mono">{{ wsUrl }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label font-mono">API URL</span>
+          <span class="info-value font-mono">{{ apiUrl }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label font-mono">RECONNECTS</span>
+          <span class="info-value font-mono">{{ connectionState().reconnectCount }}</span>
+        </div>
+
+        <div class="health-panel">
+          <div class="health-header">
+            <span class="info-label font-mono">SERVER HEALTH</span>
+            <button mat-stroked-button class="refresh-health-btn" [disabled]="healthLoading()" (click)="refreshHealth()">
+              <lucide-angular name="refresh-cw" [size]="13" [class.spin]="healthLoading()" />
+              {{ healthLoading() ? 'Loading…' : 'Refresh' }}
+            </button>
+          </div>
+
+          @if (healthError()) {
+            <p class="health-error font-mono">
+              <lucide-angular name="alert-triangle" [size]="13" />
+              {{ healthError() }}
+            </p>
+          }
+
+          @if (serverHealth(); as health) {
+            <pre class="health-json font-mono">{{ health | json }}</pre>
+          } @else if (!healthLoading() && !healthError()) {
+            <p class="health-hint font-mono">Click Refresh to query /api/health</p>
+          }
+        </div>
+      </div>
+    }
+  </section>
+</div>

@@ -51,6 +51,11 @@ export class AlertService {
     this.isBrowser && localStorage.getItem('helm.sound.muted') === 'true',
   );
 
+  // ── Custom threshold overrides (from Settings page) ────────────────
+  private readonly customThresholds = signal<
+    Partial<Record<AlertableSensorKey, SensorThreshold>>
+  >({});
+
   // ── Internal tracking (prevent alert storm — one alert per threshold crossing) ──
   // Key format: `${vehicleId}:${sensorKey}` → current ThresholdStatus
   private readonly sensorStates = new Map<string, ThresholdStatus>();
@@ -93,6 +98,18 @@ export class AlertService {
     this.telemetryService.allVehicleTelemetry$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((frame) => this.processFrame(frame));
+
+    // Bootstrap: restore threshold customizations from localStorage on service init
+    if (this.isBrowser) {
+      const stored = localStorage.getItem('helm.thresholds');
+      if (stored) {
+        try {
+          this.updateThresholds(JSON.parse(stored) as Record<string, { warning: number; critical: number }>);
+        } catch {
+          // Ignore corrupt data — fall back to defaults
+        }
+      }
+    }
   }
 
   // ── Public threshold evaluation API ───────────────────
@@ -151,6 +168,27 @@ export class AlertService {
     if (this.isBrowser) {
       localStorage.setItem('helm.sound.muted', String(this.soundMuted()));
     }
+  }
+
+  /**
+   * Called by SettingsComponent on every form value change (debounced 500ms).
+   * Merges operator from DEFAULT_THRESHOLDS with user-supplied warning/critical values.
+   */
+  updateThresholds(
+    config: Record<string, { warning: number; critical: number }>,
+  ): void {
+    const thresholds: Partial<Record<AlertableSensorKey, SensorThreshold>> = {};
+    for (const [key, vals] of Object.entries(config)) {
+      const defaults = DEFAULT_THRESHOLDS[key as AlertableSensorKey];
+      if (defaults) {
+        thresholds[key as AlertableSensorKey] = {
+          ...defaults,
+          warning:  vals.warning,
+          critical: vals.critical,
+        };
+      }
+    }
+    this.customThresholds.set(thresholds);
   }
 
   getAlertsForVehicle$(vehicleId: string): Observable<Alert[]> {
@@ -230,9 +268,7 @@ export class AlertService {
   }
 
   private getThreshold(sensor: AlertableSensorKey): SensorThreshold {
-    // Week 2: will read from user-configured localStorage thresholds.
-    // For now, use compiled-in defaults.
-    return DEFAULT_THRESHOLDS[sensor];
+    return this.customThresholds()[sensor] ?? DEFAULT_THRESHOLDS[sensor];
   }
 
   private buildMessage(

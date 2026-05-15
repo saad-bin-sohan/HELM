@@ -137,6 +137,7 @@ export class DepthProfileChartComponent implements OnChanges {
   // Expose constants to template
   protected readonly CHART_H   = CHART_H;
   protected readonly BAR_W     = BAR_W;
+  protected readonly LABEL_H   = LABEL_H;
 
   protected drag: DragState = {
     active: false, barIndex: -1, startY: 0, startDepth: 0,
