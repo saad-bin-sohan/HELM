@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
+import { unsavedChangesGuard } from './features/mission-planner/unsaved-changes.guard';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,7 @@ export const routes: Routes = [
           import('./features/mission-planner/mission-planner.component').then(
             (m) => m.MissionPlannerComponent,
           ),
+        canDeactivate: [unsavedChangesGuard],
         title: 'Mission Planner — HELM',
       },
       {
