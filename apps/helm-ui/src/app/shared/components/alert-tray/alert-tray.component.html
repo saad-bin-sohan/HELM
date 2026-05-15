@@ -1,0 +1,116 @@
+<aside class="alert-tray" [@traySlide] role="complementary" aria-label="Alerts panel">
+  <header class="tray-header">
+    <div class="tray-title-group">
+      <h2 class="tray-title font-display">Alerts</h2>
+      @if (unacknowledgedCount() > 0) {
+        <span class="tray-unack-badge">{{ unacknowledgedCount() }}</span>
+      }
+    </div>
+    <div class="tray-header-actions">
+      @if (unacknowledgedCount() > 0) {
+        <button
+          mat-icon-button
+          class="tray-ack-all-btn"
+          (click)="acknowledgeAll.emit()"
+          [matTooltip]="'Acknowledge all ' + unacknowledgedCount() + ' alerts'"
+        >
+          <lucide-angular name="check-check" [size]="15" />
+        </button>
+      }
+      <button
+        mat-icon-button
+        class="tray-close-btn"
+        (click)="close.emit()"
+        aria-label="Close alert tray"
+      >
+        <lucide-angular name="x" [size]="16" />
+      </button>
+    </div>
+  </header>
+
+  <div class="tray-filters">
+    <div class="filter-pills" role="group" aria-label="Filter by severity">
+      @for (sev of severityOptions; track sev.value) {
+        <button
+          class="filter-pill"
+          [class.active]="filterSeverity() === sev.value"
+          [class.pill-warning]="sev.value === 'warning'"
+          [class.pill-critical]="sev.value === 'critical'"
+          (click)="filterSeverity.set($any(sev.value))"
+        >
+          {{ sev.label }}
+        </button>
+      }
+    </div>
+
+    @if (vehicleIds().length > 1) {
+      <mat-select
+        class="tray-vehicle-select"
+        [value]="filterVehicle()"
+        (selectionChange)="filterVehicle.set($event.value)"
+        aria-label="Filter by vehicle"
+      >
+        <mat-option value="all">All Vehicles</mat-option>
+        @for (id of vehicleIds(); track id) {
+          <mat-option [value]="id">{{ id.toUpperCase() }}</mat-option>
+        }
+      </mat-select>
+    }
+  </div>
+
+  <div class="alert-list" role="list">
+    @for (alert of filteredAlerts(); track alert.id) {
+      <div
+        class="alert-item"
+        [class]="severityClass(alert)"
+        [@alertEnter]
+        role="listitem"
+      >
+        <div class="alert-severity-bar"></div>
+        <div class="alert-body">
+          <p class="alert-message">{{ alert.message }}</p>
+          <div class="alert-meta font-mono">
+            <span class="alert-vehicle">{{ alert.vehicleId.toUpperCase() }}</span>
+            <span class="meta-sep">·</span>
+            <span class="alert-time">{{ alert.timestamp | timeAgo }}</span>
+            @if (alert.resolvedAt) {
+              <span class="resolved-badge">RESOLVED</span>
+            }
+          </div>
+          <div class="alert-values font-mono">
+            Value:&nbsp;<strong>{{ alert.value | number:'1.1-1' }}</strong>
+            &nbsp;·&nbsp;
+            Threshold:&nbsp;<strong>{{ alert.threshold }}</strong>
+          </div>
+        </div>
+        <div class="alert-action">
+          @if (!alert.acknowledged && !alert.resolvedAt) {
+            <button
+              class="ack-btn"
+              (click)="acknowledge.emit(alert.id)"
+              matTooltip="Acknowledge"
+              aria-label="Acknowledge alert"
+            >
+              ACK
+            </button>
+          } @else {
+            <span class="acked-label font-mono">✓</span>
+          }
+        </div>
+      </div>
+    }
+
+    @if (filteredAlerts().length === 0) {
+      <div class="tray-empty">
+        <lucide-angular name="bell-off" [size]="28" class="tray-empty-icon" />
+        <p class="tray-empty-text font-mono">
+          @if (filterSeverity() !== 'all' || filterVehicle() !== 'all') {
+            No alerts matching filter
+          } @else {
+            All clear
+          }
+        </p>
+      </div>
+    }
+  </div>
+</aside>

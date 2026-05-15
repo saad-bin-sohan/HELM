@@ -147,3 +147,44 @@ body {
 .pulse-warning  { animation: helm-pulse-warning  1.8s ease-in-out infinite; }
 .pulse-critical { animation: helm-pulse-critical 1.2s ease-in-out infinite; }
 .value-flash    { animation: helm-value-flash    0.5s ease-out; }
+
+// ── MatSnackBar custom panel classes (must be global) ─────────────────────────
+.snack-critical {
+  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background: var(--color-critical-dim) !important;
+    border: 1px solid var(--color-critical);
+  }
+  &.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+    color: var(--color-critical) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.8125rem !important;
+  }
+}
+
+.snack-error {
+  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background: var(--color-warning-dim) !important;
+    border: 1px solid var(--color-warning);
+  }
+  &.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+    color: var(--color-warning) !important;
+    font-family: var(--font-mono) !important;
+  }
+}
+
+.snack-success {
+  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background: var(--color-healthy-dim) !important;
+    border: 1px solid var(--color-healthy);
+  }
+  &.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+    color: var(--color-healthy) !important;
+    font-family: var(--font-mono) !important;
+  }
+}
+
+// MatDialog panel class
+.helm-dialog-panel .mat-mdc-dialog-container {
+  background: var(--color-surface-panel) !important;
+  border-radius: var(--radius-lg) !important;
+}

@@ -21,6 +21,7 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 import { SparklineComponent }   from '../../shared/components/sparkline/sparkline.component';
 import { OrientationDisplayComponent } from '../../shared/components/orientation-display/orientation-display.component';
 import { FleetCardComponent }          from '../../shared/components/fleet-card/fleet-card.component';
+import { CommandPanelComponent }        from '../../shared/components/command-panel/command-panel.component';
 
 // Pipes
 import { TimeAgoPipe }         from '../../shared/pipes/time-ago.pipe';
@@ -39,10 +40,11 @@ import {
 
 /** The combined view-model for the dashboard template. One async pipe drives it all. */
 interface DashboardVm {
-  vehicle: Vehicle;
-  frame:   TelemetryFrame | null;   // null until first WS frame arrives
-  buffer:  TelemetryFrame[];        // last 60 frames for sparklines
-  mission: Mission | undefined;
+  vehicle:         Vehicle;
+  frame:           TelemetryFrame | null;   // null until first WS frame arrives
+  buffer:          TelemetryFrame[];        // last 60 frames for sparklines
+  mission:         Mission | undefined;
+  plannedMissions: Mission[];
 }
 
 /** Heading has no threshold violations — use an Infinity sentinel. */
@@ -64,6 +66,7 @@ const NO_THRESHOLD: SensorThreshold = {
     SparklineComponent,
     OrientationDisplayComponent,
     FleetCardComponent,
+    CommandPanelComponent,
     TimeAgoPipe,
     NauticalUnitsPipe,
     MissionDurationPipe,
@@ -107,18 +110,28 @@ export class DashboardComponent {
     startWith<Mission | undefined>(undefined),
   );
 
+  // ── Planned missions for selected vehicle (used by CommandPanel) ──────────
+  private readonly plannedMissions$: Observable<Mission[]> = this.id$.pipe(
+    switchMap((id): Observable<Mission[]> =>
+      id ? this.missions.getPlannedMissions$(id) : of([] as Mission[]),
+    ),
+    startWith([] as Mission[]),
+  );
+
   // ── Combined view model — single async pipe in template ───────────────────
   readonly vm$: Observable<DashboardVm> = combineLatest({
     vehicle: this.fleet.selectedVehicle$.pipe(
       filter((v): v is Vehicle => v !== undefined),
     ),
-    buffer:  this.buffer$,
-    mission: this.mission$,
+    buffer:          this.buffer$,
+    mission:         this.mission$,
+    plannedMissions: this.plannedMissions$,
   }).pipe(
-    map(({ vehicle, buffer, mission }) => ({
+    map(({ vehicle, buffer, mission, plannedMissions }) => ({
       vehicle,
       buffer,
       mission,
+      plannedMissions,
       frame: buffer.length > 0 ? buffer[buffer.length - 1] : null,
     })),
     share(),

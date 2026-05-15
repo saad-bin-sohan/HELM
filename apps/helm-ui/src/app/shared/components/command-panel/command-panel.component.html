@@ -1,0 +1,124 @@
+<div class="command-panel">
+  <div class="panel-header">
+    <span class="panel-title font-mono">COMMAND DISPATCH</span>
+    @if (activeMission) {
+      <span class="active-mission-chip">
+        {{ activeMission.name | slice:0:16 }}{{ (activeMission.name.length > 16) ? '…' : '' }}
+      </span>
+    }
+  </div>
+
+  @if (!activeMission && plannedMissions.length > 0) {
+    <div class="mission-selector">
+      <label class="selector-label font-mono">SELECT MISSION</label>
+      <select
+        class="mission-select font-mono"
+        [value]="selectedMissionId()"
+        (change)="selectedMissionId.set($any($event.target).value)"
+        aria-label="Select mission to start"
+      >
+        @for (m of plannedMissions; track m.id) {
+          <option [value]="m.id">{{ m.name }}</option>
+        }
+      </select>
+    </div>
+  }
+
+  <div class="command-grid">
+    @for (def of commandDefs; track def.type) {
+      <button
+        class="cmd-btn"
+        [class.cmd-danger]="def.dangerLevel === 'danger'"
+        [class.cmd-critical]="def.dangerLevel === 'critical'"
+        [class.cmd-fullwidth]="def.fullWidth"
+        [class.cmd-active-input]="
+          (def.needsHeadingInput && activeInlineInput() === 'heading') ||
+          (def.needsSpeedInput   && activeInlineInput() === 'speed')
+        "
+        [disabled]="isCommandDisabled(def)"
+        (click)="onCommandClick(def)"
+        [matTooltip]="def.label"
+      >
+        <lucide-angular [name]="def.icon" [size]="13" />
+        <span class="cmd-label">{{ def.label }}</span>
+        @if (def.needsHeadingInput || def.needsSpeedInput) {
+          <lucide-angular
+            [name]="(def.needsHeadingInput && activeInlineInput() === 'heading') ||
+                    (def.needsSpeedInput && activeInlineInput() === 'speed')
+                    ? 'chevron-up' : 'chevron-down'"
+            [size]="11"
+            class="cmd-chevron"
+          />
+        }
+      </button>
+    }
+  </div>
+
+  @if (activeInlineInput() === 'heading') {
+    <div class="inline-input-row">
+      <label class="inline-label font-mono">BEARING (0–360°)</label>
+      <div class="inline-input-group">
+        <input
+          type="number"
+          class="inline-input font-mono"
+          [ngModel]="headingInput()"
+          (ngModelChange)="headingInput.set($event)"
+          min="0" max="360" step="1"
+          placeholder="000"
+          aria-label="Set heading in degrees"
+        />
+        <button class="inline-dispatch-btn" (click)="onDispatchInlineInput('heading')">SET</button>
+      </div>
+    </div>
+  }
+
+  @if (activeInlineInput() === 'speed') {
+    <div class="inline-input-row">
+      <label class="inline-label font-mono">SPEED (0.5–10 kn)</label>
+      <div class="inline-input-group">
+        <input
+          type="number"
+          class="inline-input font-mono"
+          [ngModel]="speedInput()"
+          (ngModelChange)="speedInput.set($event)"
+          min="0.5" max="10" step="0.5"
+          placeholder="3.0"
+          aria-label="Set speed in knots"
+        />
+        <button class="inline-dispatch-btn" (click)="onDispatchInlineInput('speed')">SET</button>
+      </div>
+    </div>
+  }
+
+  @if (isDispatching()) {
+    <div class="dispatch-loading font-mono">
+      <lucide-angular name="loader" [size]="12" class="dispatch-spin" />
+      Dispatching...
+    </div>
+  }
+
+  <button class="history-toggle font-mono" (click)="showHistory.update(v => !v)">
+    <lucide-angular name="clock" [size]="11" />
+    HISTORY
+    <lucide-angular
+      [name]="showHistory() ? 'chevron-up' : 'chevron-down'"
+      [size]="11"
+      class="history-chevron"
+    />
+  </button>
+
+  @if (showHistory()) {
+    <div class="history-list">
+      @for (cmd of historySlice(); track cmd.id) {
+        <div class="history-item">
+          <lucide-angular [name]="statusIcon(cmd)" [size]="11" [class]="statusClass(cmd)" />
+          <span class="history-type font-mono">{{ formatCommandType(cmd.type) }}</span>
+          <span class="history-time font-mono">{{ cmd.sentAt | timeAgo }}</span>
+        </div>
+      }
+      @if (historySlice().length === 0) {
+        <p class="history-empty font-mono">No commands sent</p>
+      }
+    </div>
+  }
+</div>

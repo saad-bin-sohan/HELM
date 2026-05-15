@@ -6,3 +6,7 @@ export { OrientationDisplayComponent } from './orientation-display/orientation-d
 export { FleetCardComponent }          from './fleet-card/fleet-card.component';
 export { DepthProfileChartComponent }  from './depth-profile-chart/depth-profile-chart.component';
 export { TelemetryChartComponent }     from './telemetry-chart/telemetry-chart.component';
+export { AlertTrayComponent }          from './alert-tray/alert-tray.component';
+export { ConfirmDialogComponent }      from './confirm-dialog/confirm-dialog.component';
+export type { ConfirmDialogData }      from './confirm-dialog/confirm-dialog.component';
+export { CommandPanelComponent }       from './command-panel/command-panel.component';

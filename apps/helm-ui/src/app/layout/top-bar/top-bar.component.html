@@ -37,11 +37,12 @@
     <!-- Alert badge -->
     <button
       class="icon-btn"
-      aria-label="Alerts"
+      aria-label="Toggle alert tray"
       [matBadge]="alertCount() > 0 ? alertCount() : null"
       matBadgeColor="warn"
       matBadgeSize="small"
       [matTooltip]="alertCount() + ' unacknowledged alerts'"
+      (click)="alertTrayToggled.emit()"
     >
       <lucide-angular name="bell" [size]="16" />
     </button>

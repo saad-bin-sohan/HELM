@@ -344,3 +344,8 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+// ── Command panel in sidebar ───────────────────────────────
+.sidebar-commands {
+  padding: 10px 12px;
+}

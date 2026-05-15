@@ -1,0 +1,295 @@
+:host {
+  display: block;
+}
+
+.command-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ── Header ────────────────────────────────────────────────
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 6px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 10px;
+}
+
+.panel-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.active-mission-chip {
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+  border: 1px solid var(--color-accent-dim);
+  border-radius: var(--radius-pill);
+  padding: 2px 7px;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Mission selector ──────────────────────────────────────
+
+.mission-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.selector-label {
+  font-size: 0.625rem;
+  color: var(--color-text-disabled);
+  letter-spacing: 0.06em;
+}
+
+.mission-select {
+  width: 100%;
+  padding: 5px 8px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+}
+
+// ── Command Grid ──────────────────────────────────────────
+
+.command-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.cmd-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-size: 0.6875rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    background: var(--color-accent-dim);
+    color: var(--color-accent);
+  }
+
+  &.cmd-danger:hover:not(:disabled) {
+    border-color: var(--color-warning);
+    background: var(--color-warning-dim);
+    color: var(--color-warning);
+  }
+
+  &.cmd-critical {
+    border-color: var(--color-critical-dim);
+    color: var(--color-critical);
+
+    &:hover:not(:disabled) {
+      background: var(--color-critical-dim);
+    }
+  }
+
+  &.cmd-active-input {
+    border-color: var(--color-accent);
+    background: var(--color-accent-dim);
+    color: var(--color-accent);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.cmd-fullwidth {
+    grid-column: span 2;
+  }
+}
+
+.cmd-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.6875rem;
+}
+
+.cmd-chevron {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+// ── Inline input row ──────────────────────────────────────
+
+.inline-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-accent-dim);
+  margin-bottom: 6px;
+}
+
+.inline-label {
+  font-size: 0.625rem;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+}
+
+.inline-input-group {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.inline-input {
+  flex: 1;
+  padding: 4px 8px;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  text-align: center;
+  outline: none;
+  min-width: 0;
+
+  &:focus { border-color: var(--color-accent); }
+}
+
+.inline-dispatch-btn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+
+  &:hover { background: var(--color-accent); color: var(--color-surface-base); }
+}
+
+// ── Dispatching indicator ─────────────────────────────────
+
+.dispatch-loading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+  color: var(--color-accent);
+  padding: 4px 2px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.dispatch-spin {
+  animation: spin 1s linear infinite;
+}
+
+// ── History ────────────────────────────────────────────────
+
+.history-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 6px 2px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-disabled);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  margin-top: 6px;
+  text-align: left;
+
+  &:hover { color: var(--color-text-secondary); }
+}
+
+.history-chevron {
+  margin-left: auto;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0 2px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 2px;
+}
+
+.history-type {
+  flex: 1;
+  font-size: 0.625rem;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.history-time {
+  font-size: 0.625rem;
+  color: var(--color-text-disabled);
+  flex-shrink: 0;
+}
+
+.status-ack  { color: var(--color-healthy); }
+.status-fail { color: var(--color-critical); }
+.status-pending { color: var(--color-warning); animation: spin 1.5s linear infinite; }
+
+.history-empty {
+  font-size: 0.625rem;
+  color: var(--color-text-disabled);
+  padding: 4px 0;
+  margin: 0;
+}

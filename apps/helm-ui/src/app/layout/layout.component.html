@@ -5,10 +5,29 @@
   />
 
   <div class="helm-content-area">
-    <helm-top-bar (menuToggled)="toggleSidebar()" />
+    <helm-top-bar
+      (menuToggled)="toggleSidebar()"
+      (alertTrayToggled)="toggleAlertTray()"
+    />
 
     <main class="helm-main-scroll">
       <router-outlet />
     </main>
   </div>
 </div>
+
+<!-- Alert tray overlay — rendered at layout level so it's above all routes -->
+@if (alertTrayOpen()) {
+  <helm-alert-tray
+    [open]="alertTrayOpen()"
+    [alerts]="(alertService.alerts$ | async) ?? []"
+    (acknowledge)="onAcknowledge($event)"
+    (acknowledgeAll)="onAcknowledgeAll()"
+    (close)="alertTrayOpen.set(false)"
+  />
+  <div
+    class="tray-backdrop"
+    (click)="alertTrayOpen.set(false)"
+    aria-hidden="true"
+  ></div>
+}

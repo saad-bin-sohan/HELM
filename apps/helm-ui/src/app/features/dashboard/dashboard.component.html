@@ -234,6 +234,15 @@
           </div>
         </div>
 
+        <!-- Command panel — below fleet -->
+        <div class="sidebar-commands helm-panel">
+          <helm-command-panel
+            [vehicleId]="vm.vehicle.id"
+            [activeMission]="vm.mission"
+            [plannedMissions]="vm.plannedMissions"
+          />
+        </div>
+
       </aside>
 
     </div>

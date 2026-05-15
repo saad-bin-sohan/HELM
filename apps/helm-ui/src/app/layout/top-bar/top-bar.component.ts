@@ -39,7 +39,8 @@ import { TimeAgoPipe }      from '../../shared/pipes/time-ago.pipe';
   styleUrl:    './top-bar.component.scss',
 })
 export class TopBarComponent {
-  @Output() menuToggled = new EventEmitter<void>();
+  @Output() menuToggled      = new EventEmitter<void>();
+  @Output() alertTrayToggled = new EventEmitter<void>();
 
   readonly wsService    = inject(WebSocketService);
   readonly fleetService = inject(FleetService);
