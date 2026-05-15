@@ -1,0 +1,236 @@
+<div class="mission-log-page">
+
+  <!-- ═══════════════════════════════════════════════════════ PAGE HEADER -->
+  <header class="log-header">
+    <div class="log-title-row">
+      <h1 class="font-display">Mission Log</h1>
+
+      <!-- Mode toggle: Live / Historical -->
+      <mat-button-toggle-group
+        class="mode-toggle"
+        [value]="mode()"
+        (change)="mode.set($event.value)"
+        aria-label="Log mode"
+      >
+        <mat-button-toggle value="live">Live</mat-button-toggle>
+        <mat-button-toggle value="historical">Historical</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- Live mode: show active mission info -->
+    @if (mode() === 'live') {
+      <div class="log-meta font-mono">
+        <span class="meta-vehicle">{{ selectedVehicleId() }}</span>
+        @if (activeMission()) {
+          <span class="meta-sep">·</span>
+          <span class="meta-mission">{{ activeMission()!.name }}</span>
+          <span class="meta-status status-active">ACTIVE</span>
+        } @else {
+          <span class="meta-no-mission">No active mission — waiting...</span>
+        }
+      </div>
+    }
+
+    <!-- Historical mode: mission selector -->
+    @if (mode() === 'historical') {
+      <div class="historical-selector">
+        <mat-form-field appearance="outline" class="mission-select-field">
+          <mat-label>Select completed mission</mat-label>
+          <mat-select
+            [value]="selectedMissionId()"
+            (selectionChange)="onMissionSelected($event.value)"
+          >
+            @for (mission of (completedMissions$ | async) ?? []; track mission.id) {
+              <mat-option [value]="mission.id">
+                {{ mission.name }}
+                <span class="option-status font-mono">[{{ mission.status }}]</span>
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    }
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════ TOOLBAR -->
+  <div class="log-toolbar">
+    <!-- Event type filter pills -->
+    <div class="filter-pills" role="group" aria-label="Event type filter">
+      @for (opt of filterOptions; track opt.value) {
+        <button
+          class="filter-pill font-mono"
+          [class.active]="filterType() === opt.value"
+          (click)="filterType.set(opt.value)"
+          [attr.aria-pressed]="filterType() === opt.value"
+        >
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Export actions -->
+    <div class="export-actions">
+      <button
+        class="export-btn"
+        (click)="exportLog()"
+        [disabled]="displayEvents().length === 0"
+        matTooltip="Download event log as JSON"
+      >
+        JSON ↓
+      </button>
+      <button
+        class="export-btn"
+        (click)="copyMissionSummary()"
+        [disabled]="displayEvents().length === 0"
+        matTooltip="Copy formatted summary to clipboard"
+      >
+        Copy
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading bar (historical mode loading) -->
+  @if (isLoadingHistory()) {
+    <mat-progress-bar mode="indeterminate" class="log-progress" />
+  }
+
+  <!-- ═══════════════════════════════════════════════════════ EVENT FEED -->
+  <div class="event-feed-container">
+
+    <!-- The event list itself — AutoScrollDirective applied here -->
+    <div
+      class="event-list"
+      helmAutoScroll
+      [scrollTrigger]="displayEvents().length"
+      [paused]="replayActive()"
+      (scrolledUp)="onScrolledUp($event)"
+    >
+
+      @for (event of displayEvents(); track event.id; let i = $index) {
+        <div
+          class="event-row"
+          [class.event-highlighted]="replayActive() && i === replayIndex()"
+          [class.event-telemetry]="event.type === 'telemetry_snapshot'"
+          [class.event-alert]="event.type === 'alert_fired'"
+          [class.event-command]="event.type === 'command_sent'"
+          [class.event-waypoint]="event.type === 'waypoint_reached'"
+          [class.event-state]="event.type === 'mission_state_change'"
+          [@eventEnter]
+        >
+          <!-- Left: timestamp -->
+          <div class="event-time font-mono">
+            {{ event.timestamp | timeAgo }}
+          </div>
+
+          <!-- Center: type badge -->
+          <div
+            class="event-type-badge font-mono"
+            [class]="'type-badge type-' + event.type + ' ' + eventSeverityClass(event)"
+          >
+            {{ eventTypeLabel(event.type) }}
+          </div>
+
+          <!-- Right: detail text -->
+          <div class="event-detail">
+            {{ formatEventDetail(event) }}
+          </div>
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (displayEvents().length === 0 && !isLoadingHistory()) {
+        <div class="events-empty font-mono">
+          @if (mode() === 'live') {
+            @if (activeMission()) {
+              Waiting for mission events...
+            } @else {
+              No active mission. Start a mission from the Dashboard.
+            }
+          } @else {
+            Select a completed mission above to view its event log.
+          }
+        </div>
+      }
+
+    </div>
+
+    <!-- Jump to Now floating button (live mode only, when scrolled up) -->
+    @if (showJumpToNow() && mode() === 'live') {
+      <button
+        class="jump-to-now-btn font-mono"
+        (click)="jumpToNow()"
+        aria-label="Jump to latest events"
+      >
+        Jump to now ↓
+      </button>
+    }
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ REPLAY CONTROLS -->
+  @if (mode() === 'historical' && historicalEvents().length > 0) {
+    <div class="replay-controls helm-panel">
+
+      <div class="replay-top-row">
+
+        <!-- Play / Pause button -->
+        <button
+          class="replay-play-btn"
+          (click)="toggleReplay()"
+          [attr.aria-label]="replayActive() ? 'Pause replay' : 'Play replay'"
+          matTooltip="{{ replayActive() ? 'Pause' : 'Play replay' }}"
+        >
+          @if (replayActive()) {
+            ⏸
+          } @else {
+            ▶
+          }
+        </button>
+
+        <!-- Scrubber: MatSlider -->
+        <mat-slider
+          class="replay-scrubber"
+          [min]="0"
+          [max]="historicalEvents().length - 1"
+          [step]="1"
+          [disabled]="false"
+          aria-label="Replay scrubber"
+        >
+          <input
+            matSliderThumb
+            [value]="replayIndex()"
+            (valueChange)="onScrubberChange($event)"
+          />
+        </mat-slider>
+
+        <!-- Position indicator -->
+        <span class="replay-position font-mono">
+          {{ replayIndex() + 1 }} / {{ historicalEvents().length }}
+        </span>
+
+        <!-- Speed cycle button -->
+        <button
+          class="replay-speed-btn font-mono"
+          (click)="cycleSpeed()"
+          matTooltip="Change replay speed"
+        >
+          {{ replaySpeed() }}×
+        </button>
+
+      </div>
+
+      <!-- Current event detail at scrubber position -->
+      @if (historicalEvents()[replayIndex()]; as currentEvent) {
+        <div class="replay-current-event font-mono">
+          <span class="replay-ts">{{ currentEvent.timestamp | timeAgo }}</span>
+          <span class="replay-type-label type-badge type-{{ currentEvent.type }}">
+            {{ eventTypeLabel(currentEvent.type) }}
+          </span>
+          <span class="replay-detail">{{ formatEventDetail(currentEvent) }}</span>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

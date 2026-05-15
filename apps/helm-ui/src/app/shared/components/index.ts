@@ -10,3 +10,4 @@ export { AlertTrayComponent }          from './alert-tray/alert-tray.component';
 export { ConfirmDialogComponent }      from './confirm-dialog/confirm-dialog.component';
 export type { ConfirmDialogData }      from './confirm-dialog/confirm-dialog.component';
 export { CommandPanelComponent }       from './command-panel/command-panel.component';
+export { MissionLogComponent }         from '../../features/mission-log/mission-log.component';

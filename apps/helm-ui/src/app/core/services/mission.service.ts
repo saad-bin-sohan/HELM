@@ -43,6 +43,16 @@ export class MissionService {
     );
   }
 
+  getCompletedMissions$(vehicleId: string): Observable<Mission[]> {
+    return this.getMissionsForVehicle$(vehicleId).pipe(
+      map((missions) =>
+        missions.filter(
+          (m) => m.status === 'completed' || m.status === 'aborted',
+        ),
+      ),
+    );
+  }
+
   // ── CRUD ───────────────────────────────────────────────
 
   refreshMissions(): void {
