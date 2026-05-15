@@ -1,0 +1,94 @@
+<div class="sa-page">
+  <div class="sa-header helm-panel">
+    <div class="sa-header-left">
+      <h1 class="font-display">Sensor Analytics</h1>
+      <span class="sa-vehicle-chip font-mono">{{ selectedVehicleId() }}</span>
+      <span class="sa-mode-chip" [class.mode-live]="mode() === 'realtime'" [class.mode-historical]="mode() === 'historical'">
+        @if (mode() === 'realtime') { LIVE } @else { HISTORICAL }
+      </span>
+    </div>
+    <mat-button-toggle-group class="sa-mode-toggle" [value]="mode()" (change)="onModeChange($event.value)">
+      <mat-button-toggle value="realtime">Real-time</mat-button-toggle>
+      <mat-button-toggle value="historical">Historical</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div class="sa-channel-selector helm-panel">
+    <span class="sa-channels-label">Channels</span>
+    <div class="sa-channel-pills">
+      @for (channel of ALL_CHANNELS; track channel) {
+        <button class="sa-channel-pill" [class.pill-active]="selectedChannels().includes(channel)" [class.pill-disabled]="isChannelDisabled(channel)" [disabled]="isChannelDisabled(channel)" (click)="toggleChannel(channel)" [style.--pill-color]="CHANNEL_COLORS[channel]">
+          <span class="pill-dot"></span>
+          {{ CHANNEL_LABELS[channel] }}
+        </button>
+      }
+    </div>
+    <span class="sa-channel-hint font-mono">{{ selectedChannels().length }}/4 channels</span>
+  </div>
+
+  <div class="sa-chart-area helm-panel">
+    @if (isLoadingHistory()) {
+      <div class="sa-loading-overlay">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="font-mono">Loading telemetry history...</span>
+      </div>
+    }
+    <helm-telemetry-chart [frames]="displayFrames()" [channels]="selectedChannels()" [showThresholdLines]="true" [animateUpdates]="mode() === 'historical'"></helm-telemetry-chart>
+  </div>
+
+  @if (mode() === 'historical') {
+    <div class="sa-historical-controls helm-panel">
+      <div class="sa-range-row">
+        <span class="sa-label">Range</span>
+        @for (range of ['5m', '30m', '1h', 'mission']; track range) {
+          <button class="sa-range-btn" [class.range-active]="historyRange() === range" (click)="onRangeChange($any(range))">
+            {{ range === 'mission' ? 'Mission' : range }}
+          </button>
+        }
+        <span class="sa-frames-count font-mono">{{ historicalFrames().length }} frames loaded</span>
+      </div>
+      <div class="sa-progress-row">
+        <mat-progress-bar mode="determinate" [value]="replayProgress()"></mat-progress-bar>
+      </div>
+      <div class="sa-scrubber-row">
+        <button class="sa-ctrl-btn" [disabled]="historicalFrames().length === 0" (click)="resetReplay()" matTooltip="Reset to start">
+          <lucide-icon name="skip-back" [size]="16"></lucide-icon>
+        </button>
+        <button class="sa-ctrl-btn sa-play-btn" [disabled]="historicalFrames().length === 0" (click)="toggleReplay()">
+          @if (isReplaying()) {
+            <lucide-icon name="pause" [size]="16"></lucide-icon>
+            <span>Pause</span>
+          } @else {
+            <lucide-icon name="play" [size]="16"></lucide-icon>
+            <span>Play</span>
+          }
+        </button>
+        @if (historicalFrames().length > 1) {
+          <mat-slider class="sa-scrubber" [min]="0" [max]="historicalFrames().length - 1" [step]="1" [disabled]="isReplaying()">
+            <input matSliderThumb [value]="replayIndex()" (valueChange)="onScrubberChange($event)">
+          </mat-slider>
+        }
+        <div class="sa-speed-controls">
+          <span class="sa-label">Speed</span>
+          @for (speed of [1, 2, 5]; track speed) {
+            <button class="sa-speed-btn" [class.speed-active]="replaySpeed() === speed" (click)="onReplaySpeedChange($any(speed))">{{ speed }}x</button>
+          }
+        </div>
+      </div>
+      @if (currentFrameInfo(); as frame) {
+        <div class="sa-frame-info font-mono">
+          <span class="fi-timestamp">{{ frame.timestamp | date:'HH:mm:ss.SSS' }}</span>
+          @for (channel of selectedChannels(); track channel) {
+            <span class="fi-value" [style.color]="CHANNEL_COLORS[channel]">{{ CHANNEL_LABELS[channel] }}: {{ frame[channel] | number:'1.1-2' }}</span>
+          }
+        </div>
+      }
+      <div class="sa-export-row">
+        <button class="sa-export-btn" [disabled]="historicalFrames().length === 0" (click)="exportCsv()">
+          <lucide-icon name="download" [size]="14"></lucide-icon>
+          Export CSV
+        </button>
+      </div>
+    </div>
+  }
+</div>
