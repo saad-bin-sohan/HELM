@@ -1,0 +1,109 @@
+// ── Page wrapper ──────────────────────────────────────────────────────────────
+.fleet-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.fleet-header {
+  padding: 14px 18px;
+  flex-shrink: 0;
+}
+
+.fleet-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.fleet-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.fleet-count {
+  font-size: 0.6875rem;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+}
+
+// ── Health summary bar ────────────────────────────────────────────────────────
+.health-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.health-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 1px solid;
+}
+
+.chip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.chip-active   { color: var(--color-healthy);  border-color: rgba(16,185,129,0.4);  background: var(--color-healthy-dim); }
+.chip-warning  { color: var(--color-warning);  border-color: rgba(245,158,11,0.4);  background: var(--color-warning-dim);
+                 animation: helm-pulse-warning 1.8s ease-in-out infinite; }
+.chip-critical { color: var(--color-critical); border-color: rgba(239,68,68,0.5);   background: var(--color-critical-dim);
+                 animation: helm-pulse-critical 1.1s ease-in-out infinite; }
+.chip-idle     { color: var(--color-offline);  border-color: rgba(107,114,128,0.35); background: var(--color-offline-dim); }
+.chip-offline  { color: var(--color-offline);  border-color: rgba(107,114,128,0.3);  background: var(--color-offline-dim); }
+
+// ── Card list ─────────────────────────────────────────────────────────────────
+.fleet-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 8px;
+}
+
+// ── States ─────────────────────────────────────────────────────────────────────
+.fleet-empty,
+.fleet-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+
+.fleet-loading-pulse {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

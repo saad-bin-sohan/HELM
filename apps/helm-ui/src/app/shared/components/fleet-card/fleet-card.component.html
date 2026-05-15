@@ -1,0 +1,69 @@
+<div
+  class="fleet-card helm-panel"
+  [class.compact]="compact"
+  [class.is-selected]="isSelected"
+  [ngClass]="cardStateClass"
+  role="button"
+  tabindex="0"
+  [attr.aria-label]="'Select ' + vehicle.name"
+  (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  (keydown.space)="onSelect()"
+>
+
+  <!-- ── Top row: name + type badge + status ── -->
+  <div class="card-top">
+    <div class="card-identity">
+      <span class="card-name font-display">{{ vehicle.name }}</span>
+      <span class="card-type-chip font-mono">{{ vehicle.type }}</span>
+    </div>
+    <helm-status-badge [status]="vehicle.status" />
+  </div>
+
+  <!-- ── Battery bar ── -->
+  <div class="battery-row">
+    <span class="battery-lbl font-mono">BAT</span>
+    <div class="battery-track" role="progressbar"
+         [attr.aria-valuenow]="batteryPct"
+         aria-valuemin="0" aria-valuemax="100">
+      <div
+        class="battery-fill"
+        [ngClass]="batteryBarClass"
+        [style.width.%]="batteryPct"
+      ></div>
+    </div>
+    <span class="battery-pct font-mono">{{ batteryPct }}%</span>
+  </div>
+
+  <!-- ── Mission name (hidden in compact mode) ── -->
+  @if (!compact) {
+    <div class="mission-row">
+      @if (activeMission) {
+        <span class="mission-name font-mono">{{ activeMission.name }}</span>
+        @if (latestFrame?.missionProgress !== null) {
+          <span class="mission-pct font-mono">
+            {{ latestFrame?.missionProgress | number:'1.0-0' }}%
+          </span>
+        }
+      } @else {
+        <span class="no-mission font-mono">No active mission</span>
+      }
+    </div>
+  }
+
+  <!-- ── Bottom row: depth + speed + last ping ── -->
+  <div class="card-footer">
+    @if (latestFrame && !compact) {
+      <span class="footer-metric font-mono">
+        {{ latestFrame.depth | nauticalUnits:'depth' }}
+      </span>
+      <span class="footer-sep">·</span>
+      <span class="footer-metric font-mono">
+        {{ latestFrame.speed | nauticalUnits:'speed' }}
+      </span>
+      <span class="footer-sep">·</span>
+    }
+    <span class="footer-ping font-mono">{{ vehicle.lastPingAt | timeAgo }}</span>
+  </div>
+
+</div>

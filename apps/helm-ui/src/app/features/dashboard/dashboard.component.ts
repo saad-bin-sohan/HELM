@@ -19,12 +19,16 @@ import { MissionService }   from '../../core/services/mission.service';
 import { MetricCardComponent }  from '../../shared/components/metric-card/metric-card.component';
 import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { SparklineComponent }   from '../../shared/components/sparkline/sparkline.component';
+import { OrientationDisplayComponent } from '../../shared/components/orientation-display/orientation-display.component';
+import { FleetCardComponent }          from '../../shared/components/fleet-card/fleet-card.component';
 
 // Pipes
 import { TimeAgoPipe }         from '../../shared/pipes/time-ago.pipe';
 import { NauticalUnitsPipe }   from '../../shared/pipes/nautical-units.pipe';
 import { MissionDurationPipe } from '../../shared/pipes/mission-duration.pipe';
 import { FrameValuesPipe }     from '../../shared/pipes/frame-values.pipe';
+import { FleetStatusSortPipe }  from '../../shared/pipes/fleet-status-sort.pipe';
+import { RouterLink }           from '@angular/router';
 
 // Models
 import {
@@ -58,18 +62,26 @@ const NO_THRESHOLD: SensorThreshold = {
     MetricCardComponent,
     StatusBadgeComponent,
     SparklineComponent,
+    OrientationDisplayComponent,
+    FleetCardComponent,
     TimeAgoPipe,
     NauticalUnitsPipe,
     MissionDurationPipe,
     FrameValuesPipe,
+    FleetStatusSortPipe,
+    RouterLink,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl:    './dashboard.component.scss',
 })
 export class DashboardComponent {
-  private readonly fleet     = inject(FleetService);
-  private readonly telemetry = inject(TelemetryService);
-  private readonly missions  = inject(MissionService);
+  protected readonly fleet     = inject(FleetService);
+  protected readonly telemetry = inject(TelemetryService);
+  protected readonly missions  = inject(MissionService);
+
+  // Exposed to template for sidebar orientation display + mini fleet panel
+  protected readonly latestFrames = this.telemetry.latestFrames;
+  protected readonly vehicles$    = this.fleet.vehicles$;
 
   // ── Expose thresholds to template ──────────────────────────────────────────
   protected readonly thresholds   = DEFAULT_THRESHOLDS;

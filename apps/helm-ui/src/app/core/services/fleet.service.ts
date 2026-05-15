@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, interval } from 'rxjs';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, map } from 'rxjs/operators';
 import { TelemetryService } from './telemetry.service';
 import {
@@ -41,6 +41,13 @@ export class FleetService {
   // ── State ──────────────────────────────────────────────
   private readonly vehiclesSubject = new BehaviorSubject<Vehicle[]>([]);
 
+  // Signal view of vehicles$ — required for computed() to track changes reactively.
+  // toSignal() must be called in an injection context; class fields initialize in ctor context. ✓
+  private readonly vehiclesSignal = toSignal(
+    this.vehiclesSubject.asObservable(),
+    { initialValue: [] as Vehicle[] },
+  );
+
   /** All vehicles as an Observable — compatible with async pipe. */
   readonly vehicles$: Observable<Vehicle[]> = this.vehiclesSubject.asObservable();
 
@@ -61,7 +68,7 @@ export class FleetService {
    * Used by the fleet panel header bar.
    */
   readonly healthSummary = computed(() => {
-    const vehicles = this.vehiclesSubject.getValue();
+    const vehicles = this.vehiclesSignal(); // ← Signal read — now properly reactive
     return {
       total:    vehicles.length,
       active:   vehicles.filter((v) => v.status === 'active').length,

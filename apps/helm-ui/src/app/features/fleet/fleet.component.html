@@ -1,0 +1,78 @@
+<div class="fleet-page">
+
+  @if (vm$ | async; as vm) {
+
+    <!-- ══════════════════════════════════════════════════════
+         FLEET HEADER — Title + health summary bar
+         ════════════════════════════════════════════════════ -->
+    <header class="fleet-header helm-panel">
+      <div class="fleet-title-row">
+        <h1 class="fleet-title font-display">Fleet Overview</h1>
+        <span class="fleet-count font-mono">{{ vm.health.total }} vessels</span>
+      </div>
+
+      <!-- Health summary bar -->
+      <div class="health-bar">
+        @if (vm.health.active > 0) {
+          <span class="health-chip chip-active">
+            <span class="chip-dot"></span>
+            {{ vm.health.active }} Active
+          </span>
+        }
+        @if (vm.health.warning > 0) {
+          <span class="health-chip chip-warning">
+            <span class="chip-dot"></span>
+            {{ vm.health.warning }} Warning
+          </span>
+        }
+        @if (vm.health.critical > 0) {
+          <span class="health-chip chip-critical">
+            <span class="chip-dot"></span>
+            {{ vm.health.critical }} Critical
+          </span>
+        }
+        @if (vm.health.idle > 0) {
+          <span class="health-chip chip-idle">
+            {{ vm.health.idle }} Idle
+          </span>
+        }
+        @if (vm.health.offline > 0) {
+          <span class="health-chip chip-offline">
+            {{ vm.health.offline }} Offline
+          </span>
+        }
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════════════════════
+         FLEET CARD LIST — sorted by severity, animated
+         ════════════════════════════════════════════════════ -->
+    <div class="fleet-card-list">
+      @for (vehicle of vm.vehicles | fleetStatusSort; track vehicle.id) {
+        <helm-fleet-card
+          [@cardSlide]
+          [vehicle]="vehicle"
+          [latestFrame]="latestFrames().get(vehicle.id) ?? null"
+          [activeMission]="getMission(vm.missionMap, vehicle.id)"
+          [isSelected]="selectedId() === vehicle.id"
+          [compact]="false"
+          (select)="onVehicleSelect($event)"
+        />
+      }
+
+      @if (vm.vehicles.length === 0) {
+        <div class="fleet-empty">
+          <p class="font-mono">No vehicles registered — waiting for server connection...</p>
+        </div>
+      }
+    </div>
+
+  } @else {
+    <!-- Loading state -->
+    <div class="fleet-loading">
+      <div class="fleet-loading-pulse"></div>
+      <p class="font-mono">Loading fleet data...</p>
+    </div>
+  }
+
+</div>

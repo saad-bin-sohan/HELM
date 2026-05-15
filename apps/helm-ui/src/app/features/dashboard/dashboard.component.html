@@ -203,20 +203,37 @@
 
       </section>
 
-      <!-- ── Right sidebar placeholder (Batch 5) ── -->
+      <!-- ── Right sidebar (Batch 5: Orientation + Mini Fleet) ── -->
       <aside class="dashboard-sidebar">
-        <div class="sidebar-placeholder helm-panel">
-          <p class="placeholder-title font-display">Orientation</p>
-          <p class="placeholder-sub font-mono">CSS 3D — Batch 5</p>
-          <div class="orient-stub">
-            <div class="orient-ring"></div>
-            <div class="orient-body"></div>
+
+        <!-- Orientation display -->
+        <div class="sidebar-orient helm-panel">
+          <helm-orientation-display
+            [roll]="vm.frame?.roll ?? 0"
+            [pitch]="vm.frame?.pitch ?? 0"
+            [yaw]="vm.frame?.heading ?? 0"
+          />
+        </div>
+
+        <!-- Mini fleet panel -->
+        <div class="sidebar-fleet helm-panel">
+          <div class="mini-fleet-hdr">
+            <span class="mini-fleet-lbl font-mono">FLEET STATUS</span>
+            <a routerLink="/fleet" class="mini-fleet-link font-mono">ALL →</a>
+          </div>
+          <div class="mini-fleet-cards">
+            @for (v of (vehicles$ | async) ?? [] | fleetStatusSort; track v.id) {
+              <helm-fleet-card
+                [vehicle]="v"
+                [latestFrame]="latestFrames().get(v.id) ?? null"
+                [isSelected]="fleet.selectedVehicleId() === v.id"
+                [compact]="true"
+                (select)="fleet.selectVehicle($event)"
+              />
+            }
           </div>
         </div>
-        <div class="sidebar-fleet-stub helm-panel">
-          <p class="placeholder-title font-display">Fleet Panel</p>
-          <p class="placeholder-sub font-mono">Vehicle cards — Batch 5</p>
-        </div>
+
       </aside>
 
     </div>
