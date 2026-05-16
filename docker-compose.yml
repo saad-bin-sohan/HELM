@@ -1,0 +1,57 @@
+# =============================================================================
+# HELM — Docker Compose (Development)
+# Usage: docker compose up
+# Access: Angular SSR at http://localhost:4000
+#         Node API at http://localhost:3000
+# No nginx: services are accessed directly on their ports.
+# The Angular SSR server proxies /api to helm-server via BACKEND_URL.
+# =============================================================================
+
+services:
+
+  # ── Node.js simulation backend ─────────────────────────────────────────────
+  helm-server:
+    build:
+      context: .
+      dockerfile: apps/helm-server/Dockerfile
+    container_name: helm-server-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+
+  # ── Angular SSR frontend ────────────────────────────────────────────────────
+  helm-ui:
+    build:
+      context: .
+      dockerfile: apps/helm-ui/Dockerfile
+    container_name: helm-ui-dev
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      # Browser-facing WebSocket URL (client connects directly to helm-server port)
+      WS_URL: "ws://localhost:3000"
+      # Browser-facing API URL (client makes REST calls directly to helm-server port)
+      API_URL: "http://localhost:3000/api"
+      # Internal SSR proxy target (Node.js server.ts proxies /api to this URL)
+      # Uses Docker service name for internal network resolution
+      BACKEND_URL: "http://helm-server:3000"
+    depends_on:
+      helm-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3

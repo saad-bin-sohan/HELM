@@ -1,0 +1,43 @@
+# Dependencies (re-installed inside Docker)
+node_modules
+.pnpm-store
+
+# Build artifacts (built fresh inside Docker)
+dist
+tmp
+out-tsc
+
+# NX cache (not needed in Docker)
+.nx/cache
+.nx/workspace-data
+.angular
+
+# Version control
+.git
+.gitignore
+
+# Test / coverage (not needed for production build)
+coverage
+**/*.spec.ts
+**/*.test.ts
+**/test-setup.ts
+**/jest.config.*
+
+# Development IDE
+.vscode
+.idea
+*.sublime-workspace
+
+# Secrets / environment (NEVER bake these in)
+.env
+.env.*
+!.env.example
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+**/*.log
+
+# Documentation (not needed in image)
+*.md
+!README.md

@@ -1,0 +1,82 @@
+# =============================================================================
+# HELM — Docker Compose (Production)
+# Usage: docker compose -f docker-compose.prod.yml up -d
+# Access: http://yourdomain.com (via nginx on port 80)
+# Update WS_URL and API_URL with your actual domain before deploying.
+# =============================================================================
+
+services:
+
+  # ── Node.js simulation backend ─────────────────────────────────────────────
+  helm-server:
+    build:
+      context: .
+      dockerfile: apps/helm-server/Dockerfile
+    container_name: helm-server-prod
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    networks:
+      - helm-internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+
+  # ── Angular SSR frontend ────────────────────────────────────────────────────
+  helm-ui:
+    build:
+      context: .
+      dockerfile: apps/helm-ui/Dockerfile
+    container_name: helm-ui-prod
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      PORT: 4000
+      WS_URL: "wss://yourdomain.com/ws"
+      API_URL: "https://yourdomain.com/api"
+      BACKEND_URL: "http://helm-server:3000"
+    depends_on:
+      helm-server:
+        condition: service_healthy
+    networks:
+      - helm-internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+  # ── Nginx reverse proxy ─────────────────────────────────────────────────────
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: helm-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      helm-ui:
+        condition: service_healthy
+      helm-server:
+        condition: service_healthy
+    networks:
+      - helm-internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+
+networks:
+  helm-internal:
+    driver: bridge

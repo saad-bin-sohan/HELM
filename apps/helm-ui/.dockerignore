@@ -1,0 +1,12 @@
+# This file documents what to exclude when building from workspace root.
+# The effective .dockerignore must be at the workspace root.
+# See /.dockerignore (created in Task 2D.2)
+node_modules
+dist
+.nx
+.git
+.angular
+coverage
+*.log
+.env
+.env.*
