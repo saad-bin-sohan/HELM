@@ -60,7 +60,7 @@ export class TelemetryService {
    */
   telemetryBuffer$(
     vehicleId:  string,
-    bufferSize  = environment.telemetryBufferSize,
+    bufferSize: number = environment.telemetryBufferSize,
   ): Observable<TelemetryFrame[]> {
     return this.telemetry$(vehicleId).pipe(
       scan((buf: TelemetryFrame[], frame) => {

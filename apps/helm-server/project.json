@@ -12,26 +12,40 @@
         "platform": "node",
         "outputPath": "dist/apps/helm-server",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
+        "thirdParty": false,
+        "tsPaths": true,
         "main": "apps/helm-server/src/main.ts",
         "tsConfig": "apps/helm-server/tsconfig.app.json",
         "assets": ["apps/helm-server/src/assets"],
         "generatePackageJson": true,
+        "external": [
+          "express",
+          "cors",
+          "ws",
+          "uuid",
+          "node:path",
+          "node:http",
+          "node:url",
+          "node:fs",
+          "node:stream"
+        ],
         "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
+          "sourcemap": false,
+          "outExtension": { ".js": ".js" }
         }
       },
       "configurations": {
-        "development": {},
+        "development": {
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": { ".js": ".js" }
+          }
+        },
         "production": {
           "esbuildOptions": {
             "sourcemap": false,
-            "outExtension": {
-              ".js": ".js"
-            }
+            "outExtension": { ".js": ".js" }
           }
         }
       }

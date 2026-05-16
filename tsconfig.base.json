@@ -15,11 +15,12 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@helm/models":      ["apps/helm-ui/src/app/core/models/index.ts"],
-      "@helm/core/*":      ["apps/helm-ui/src/app/core/*"],
-      "@helm/shared/*":    ["apps/helm-ui/src/app/shared/*"],
-      "@helm/features/*":  ["apps/helm-ui/src/app/features/*"],
-      "@helm/env":         ["apps/helm-ui/src/environments/environment.ts"]
+      "@helm/shared-types":  ["libs/shared-types/src/index.ts"],
+      "@helm/models":        ["libs/shared-types/src/index.ts"],
+      "@helm/core/*":        ["apps/helm-ui/src/app/core/*"],
+      "@helm/shared/*":      ["apps/helm-ui/src/app/shared/*"],
+      "@helm/features/*":    ["apps/helm-ui/src/app/features/*"],
+      "@helm/env":           ["apps/helm-ui/src/environments/environment.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

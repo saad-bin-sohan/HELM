@@ -1,6 +1,7 @@
 import {
-  Injectable, inject, signal, computed, effect, untracked,
+  Injectable, inject, signal, computed, effect, untracked, PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, interval } from 'rxjs';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -36,6 +37,7 @@ function deriveStatus(frame: TelemetryFrame, hasMission: boolean): VehicleStatus
 export class FleetService {
   private readonly http             = inject(HttpClient);
   private readonly telemetryService = inject(TelemetryService);
+  private readonly isBrowser        = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly apiUrl           = environment.apiUrl;
 
   // ── State ──────────────────────────────────────────────
@@ -119,9 +121,11 @@ export class FleetService {
 
     // 3. Offline detection — poll every 5s for vehicles whose last ping is stale
     // (Frames stop arriving during signal_loss fault, so the effect above won't fire)
-    interval(5_000)
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.checkOfflineVehicles());
+    if (this.isBrowser) {
+      interval(5_000)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => this.checkOfflineVehicles());
+    }
   }
 
   // ── Public API ─────────────────────────────────────────

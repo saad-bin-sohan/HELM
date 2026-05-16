@@ -20,7 +20,6 @@ export interface TelemetryFrame {
   missionProgress: number | null; // 0–100 if mission active
 }
 
-// Which direction a threshold violation is checked
 export type ThresholdOperator = 'gt' | 'lt' | 'abs-gt';
 
 export interface SensorThreshold {
@@ -29,7 +28,6 @@ export interface SensorThreshold {
   operator: ThresholdOperator;
 }
 
-// Only the telemetry fields that have operator-configurable thresholds
 export type AlertableSensorKey = Extract<keyof TelemetryFrame,
   'depth' | 'speed' | 'battery' | 'thrust' | 'waterTemp' | 'pressure' | 'roll' | 'pitch'
 >;
@@ -49,7 +47,7 @@ export type ThresholdStatus = 'healthy' | 'warning' | 'critical';
 
 /**
  * Pure function — evaluate where a value falls relative to its thresholds.
- * Used by ThresholdColorDirective, AlertService, MetricCardComponent.
+ * Used by ThresholdColorDirective, AlertService, MetricCardComponent, and the server physics module.
  */
 export function evaluateThreshold(
   value: number,

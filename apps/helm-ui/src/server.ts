@@ -5,6 +5,7 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,21 +15,30 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+// ── API proxy ─────────────────────────────────────────────────────────────────
+// In production-with-nginx, nginx handles /api and /ws routing to helm-server.
+// In direct deployments (Railway single-service, local SSR testing), this proxy
+// forwards API and WebSocket calls to the backend.
+// Set API_URL env var to the backend service URL (default: localhost:3000 for dev).
+const apiTarget = process.env['API_URL'] ?? 'http://localhost:3000';
 
-/**
- * Serve static files from /browser
- */
+app.use(
+  '/api',
+  createProxyMiddleware({
+    target: apiTarget,
+    changeOrigin: true,
+    on: {
+      error: (err, _req, res) => {
+        console.error('[SSR Proxy] API proxy error:', (err as Error).message);
+        if ('headersSent' in res && !res.headersSent) {
+          (res as express.Response).status(502).json({ error: 'Backend unavailable' });
+        }
+      },
+    },
+  }),
+);
+
+// ── Static files ──────────────────────────────────────────────────────────────
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',
@@ -37,9 +47,7 @@ app.use(
   }),
 );
 
-/**
- * Handle all other requests by rendering the Angular application.
- */
+// ── Angular SSR ───────────────────────────────────────────────────────────────
 app.use('/**', (req, res, next) => {
   angularApp
     .handle(req)
@@ -49,18 +57,13 @@ app.use('/**', (req, res, next) => {
     .catch(next);
 });
 
-/**
- * Start the server if this module is the main entry point, or it is ran via PM2.
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
- */
+// ── Start server ──────────────────────────────────────────────────────────────
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`[HELM SSR] Angular server listening on http://localhost:${port}`);
+    console.log(`[HELM SSR] API proxy → ${apiTarget}`);
   });
 }
 
-/**
- * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
- */
 export const reqHandler = createNodeRequestHandler(app);
