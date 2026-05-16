@@ -41,8 +41,9 @@ services:
       PORT: 4000
       # Browser-facing WebSocket URL (client connects directly to helm-server port)
       WS_URL: "ws://localhost:3000"
-      # Browser-facing API URL (client makes REST calls directly to helm-server port)
-      API_URL: "http://localhost:3000/api"
+      # Browser-facing API URL — relative path so both browser AND SSR requests
+      # route through the Express proxy in server.ts (/api → BACKEND_URL)
+      API_URL: "/api"
       # Internal SSR proxy target (Node.js server.ts proxies /api to this URL)
       # Uses Docker service name for internal network resolution
       BACKEND_URL: "http://helm-server:3000"

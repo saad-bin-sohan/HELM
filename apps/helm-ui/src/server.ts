@@ -33,11 +33,14 @@ const apiTarget =
   process.env['API_URL']     ??
   'http://localhost:3000';
 
+// Use pathFilter (not Express mount) so the /api prefix is preserved in the
+// proxied request. app.use('/api', proxy) strips the mount prefix from req.url,
+// causing the backend to receive /vehicles instead of /api/vehicles → 404.
 app.use(
-  '/api',
   createProxyMiddleware({
     target: apiTarget,
     changeOrigin: true,
+    pathFilter: '/api',
     on: {
       error: (err, _req, res) => {
         console.error('[SSR Proxy] API proxy error:', (err as Error).message);

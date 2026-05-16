@@ -40,7 +40,10 @@ services:
     environment:
       PORT: 4000
       WS_URL: "wss://yourdomain.com/ws"
-      API_URL: "https://yourdomain.com/api"
+      # Browser-facing API URL — relative path works in all environments.
+      # Browser: nginx catches /api/ and routes to helm-server directly.
+      # SSR: Express proxy catches /api and forwards to BACKEND_URL.
+      API_URL: "/api"
       BACKEND_URL: "http://helm-server:3000"
     depends_on:
       helm-server:
