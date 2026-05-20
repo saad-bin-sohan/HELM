@@ -149,3 +149,27 @@
   letter-spacing: 0.04em;
 }
 
+// ── Responsive ──────────────────────────────────────────────────
+// Hide the HELM tagline on narrow screens to prevent overflow
+@media (max-width: 768px) {
+  .app-tagline {
+    display: none;
+  }
+}
+
+// Narrow the vehicle selector on very small screens
+@media (max-width: 480px) {
+  .vehicle-select {
+    min-width: 130px;
+  }
+
+  .helm-top-bar {
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  .last-ping {
+    display: none;          // Hide timestamp on 375px — too cramped
+  }
+}
+

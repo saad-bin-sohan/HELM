@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser, DecimalPipe, DatePipe } from '@angular/common';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, interval, Subscription } from 'rxjs';
+import { switchMap, interval, Subscription, throttleTime, asyncScheduler } from 'rxjs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSliderModule }       from '@angular/material/slider';
 import { MatProgressBarModule }  from '@angular/material/progress-bar';
@@ -85,6 +85,7 @@ export class SensorAnalyticsComponent {
   // ── Real-time data ──
   private readonly realtimeBuffer$ = toObservable(this.selectedVehicleId).pipe(
     switchMap(id => this.telemetryService.telemetryBuffer$(id, 300)),
+    throttleTime(100, asyncScheduler, { leading: true, trailing: true })
   );
   readonly realtimeFrames = toSignal(this.realtimeBuffer$, {
     initialValue: [] as TelemetryFrame[],
@@ -148,7 +149,7 @@ export class SensorAnalyticsComponent {
   constructor() {
     // Reload history when selectedVehicleId changes while in historical mode
     effect(() => {
-      const _vehicleId = this.selectedVehicleId(); // tracked dependency
+      this.selectedVehicleId(); // tracked dependency
       if (this.mode() === 'historical') {
         untracked(() => {
           this.stopReplay();

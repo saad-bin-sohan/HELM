@@ -53,8 +53,8 @@ export class WebSocketService implements OnDestroy {
       this.ws.onmessage = (e) => this.handleMessage(e);
       this.ws.onerror   = () => this.handleError();
       this.ws.onclose   = () => this.handleClose();
-    } catch (err) {
-      console.error('[WS] Failed to create WebSocket:', err);
+    } catch {
+      // Failed to create WebSocket
       this.scheduleReconnect();
     }
   }
@@ -76,7 +76,6 @@ export class WebSocketService implements OnDestroy {
     this.reconnectAttempts = 0;
     this.setStatus('live');
     this.resetHeartbeatTimeout();
-    console.log('[WS] Connected →', environment.wsUrl);
   }
 
   private handleMessage(event: MessageEvent<string>): void {
@@ -91,14 +90,13 @@ export class WebSocketService implements OnDestroy {
 
       this.resetHeartbeatTimeout();
       this.messagesSubject.next(msg);
-    } catch (err) {
-      console.warn('[WS] Malformed message — ignoring:', err);
+    } catch {
+      // Malformed message — ignoring
     }
   }
 
   private handleError(): void {
     // onerror is always followed by onclose; let onclose drive reconnect
-    console.warn('[WS] Socket error');
   }
 
   private handleClose(): void {
@@ -125,7 +123,6 @@ export class WebSocketService implements OnDestroy {
       reconnectCount: s.reconnectCount + 1,
     }));
 
-    console.log(`[WS] Reconnecting in ${delayMs}ms (attempt ${this.reconnectAttempts})`);
     this.reconnectTimer = setTimeout(() => this.connect(), delayMs);
   }
 
@@ -137,7 +134,6 @@ export class WebSocketService implements OnDestroy {
       // No heartbeat for HEARTBEAT_TIMEOUT_MS — connection degraded
       if (this.connectionState().status === 'live') {
         this.setStatus('reconnecting');
-        console.warn('[WS] Heartbeat timeout — marking connection as degraded');
       }
     }, this.HEARTBEAT_TIMEOUT_MS);
   }

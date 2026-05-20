@@ -14,47 +14,49 @@
     </button>
 
     @if (isSectionExpanded('thresholds')) {
-      <div class="threshold-table" [formGroup]="thresholdForm">
-        <div class="threshold-header-row">
-          <span class="col-sensor font-mono">SENSOR</span>
-          <span class="col-warning font-mono">WARNING</span>
-          <span class="col-critical font-mono">CRITICAL</span>
-          <span class="col-operator font-mono">TRIGGER</span>
-          <span class="col-reset"></span>
-        </div>
-
-        @for (row of sensorRows; track row.key) {
-          <div class="threshold-row" [formGroupName]="row.key">
-            <div class="col-sensor">
-              <span class="sensor-label">{{ row.label }}</span>
-              <span class="sensor-unit font-mono">{{ row.unit }}</span>
-            </div>
-            <div class="col-warning">
-              <mat-form-field appearance="outline" class="threshold-field">
-                <input matInput type="number" formControlName="warning" [min]="row.warningMin" [max]="row.warningMax" [step]="row.step" class="font-mono" />
-              </mat-form-field>
-            </div>
-            <div class="col-critical">
-              <mat-form-field appearance="outline" class="threshold-field">
-                <input matInput type="number" formControlName="critical" [min]="row.criticalMin" [max]="row.criticalMax" [step]="row.step" class="font-mono" />
-              </mat-form-field>
-            </div>
-            <div class="col-operator">
-              <span class="operator-badge font-mono">{{ row.operator }}</span>
-            </div>
-            <div class="col-reset">
-              <button mat-icon-button class="reset-btn" [matTooltip]="'Reset ' + row.label + ' to defaults'" (click)="resetSensor(row.key)">
-                <lucide-angular name="rotate-ccw" [size]="14" />
-              </button>
-            </div>
+      <div class="threshold-scroll-wrap">
+        <div class="threshold-table" [formGroup]="thresholdForm">
+          <div class="threshold-header-row">
+            <span class="col-sensor font-mono">SENSOR</span>
+            <span class="col-warning font-mono">WARNING</span>
+            <span class="col-critical font-mono">CRITICAL</span>
+            <span class="col-operator font-mono">TRIGGER</span>
+            <span class="col-reset"></span>
           </div>
-        }
 
-        <div class="threshold-footer">
-          <button mat-stroked-button class="reset-all-btn" (click)="resetAll()">
-            <lucide-angular name="rotate-ccw" [size]="14" />
-            Reset All to Defaults
-          </button>
+          @for (row of sensorRows; track row.key) {
+            <div class="threshold-row" [formGroupName]="row.key">
+              <div class="col-sensor">
+                <span class="sensor-label">{{ row.label }}</span>
+                <span class="sensor-unit font-mono">{{ row.unit }}</span>
+              </div>
+              <div class="col-warning">
+                <mat-form-field appearance="outline" class="threshold-field">
+                  <input matInput type="number" formControlName="warning" [min]="row.warningMin" [max]="row.warningMax" [step]="row.step" class="font-mono" />
+                </mat-form-field>
+              </div>
+              <div class="col-critical">
+                <mat-form-field appearance="outline" class="threshold-field">
+                  <input matInput type="number" formControlName="critical" [min]="row.criticalMin" [max]="row.criticalMax" [step]="row.step" class="font-mono" />
+                </mat-form-field>
+              </div>
+              <div class="col-operator">
+                <span class="operator-badge font-mono">{{ row.operator }}</span>
+              </div>
+              <div class="col-reset">
+                <button mat-icon-button class="reset-btn" [matTooltip]="'Reset ' + row.label + ' to defaults'" (click)="resetSensor(row.key)">
+                  <lucide-angular name="rotate-ccw" [size]="14" />
+                </button>
+              </div>
+            </div>
+          }
+
+          <div class="threshold-footer">
+            <button mat-stroked-button class="reset-all-btn" (click)="resetAll()">
+              <lucide-angular name="rotate-ccw" [size]="14" />
+              Reset All to Defaults
+            </button>
+          </div>
         </div>
       </div>
     }

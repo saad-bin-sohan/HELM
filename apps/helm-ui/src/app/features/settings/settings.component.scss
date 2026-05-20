@@ -340,3 +340,23 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+// ── Threshold scroll wrapper ─────────────────────────────
+.threshold-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ── Responsive ──────────────────────────────────────────────
+@media (max-width: 640px) {
+  .threshold-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 480px;
+  }
+
+  // Wrap the table in a scrollable container
+  .settings-section {
+    overflow: hidden;
+  }
+}

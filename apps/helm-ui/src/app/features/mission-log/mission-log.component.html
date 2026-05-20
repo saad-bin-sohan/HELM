@@ -188,20 +188,31 @@
         </button>
 
         <!-- Scrubber: MatSlider -->
-        <mat-slider
-          class="replay-scrubber"
-          [min]="0"
-          [max]="historicalEvents().length - 1"
-          [step]="1"
-          [disabled]="false"
-          aria-label="Replay scrubber"
-        >
-          <input
-            matSliderThumb
-            [value]="replayIndex()"
-            (valueChange)="onScrubberChange($event)"
-          />
-        </mat-slider>
+        <div class="scrubber-wrapper">
+          <mat-slider
+            class="replay-scrubber"
+            [min]="0"
+            [max]="historicalEvents().length - 1"
+            [step]="1"
+            [disabled]="false"
+            aria-label="Replay scrubber"
+          >
+            <input
+              matSliderThumb
+              [value]="replayIndex()"
+              (valueChange)="onScrubberChange($event)"
+            />
+          </mat-slider>
+
+          @for (marker of alertMarkerPositions(); track $index) {
+            <div
+              class="scrubber-tick"
+              [class.tick-warning]="marker.severity === 'warning'"
+              [class.tick-critical]="marker.severity === 'critical'"
+              [style.left.%]="marker.position"
+            ></div>
+          }
+        </div>
 
         <!-- Position indicator -->
         <span class="replay-position font-mono">

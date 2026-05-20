@@ -365,3 +365,21 @@
     flex: 1;
   }
 }
+
+// Additional: 480px — reduce map height further, tighten form
+@media (max-width: 480px) {
+  .mp-container {
+    grid-template-rows: 35vh auto;
+  }
+
+  .mp-map-header {
+    flex-direction: column;
+    align-items:    flex-start;
+    gap:            4px;
+    padding:        10px 12px 6px;
+  }
+
+  .mp-panel {
+    padding: 10px 12px;
+  }
+}

@@ -1,6 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, Input, Output, EventEmitter,
-  signal, computed, OnChanges, SimpleChanges,
+  signal, computed, OnChanges, SimpleChanges, HostListener,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { MatButtonModule }  from '@angular/material/button';
@@ -65,6 +65,11 @@ export class AlertTrayComponent implements OnChanges {
   @Output() acknowledge    = new EventEmitter<string>();   // alertId
   @Output() acknowledgeAll = new EventEmitter<void>();
   @Output() close          = new EventEmitter<void>();
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.close.emit();
+  }
 
   readonly filterSeverity = signal<AlertSeverity | 'all'>('all');
   readonly filterVehicle  = signal<string>('all');

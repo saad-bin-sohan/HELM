@@ -215,6 +215,23 @@
           />
         </div>
 
+        <!-- Camera Feed Placeholder (Animated via CSS) -->
+        <div class="sidebar-camera helm-panel">
+          <div class="camera-header">
+            <span class="camera-label">AFT CAMERA (CAM-02)</span>
+            <span class="camera-status-dot camera-offline"></span>
+          </div>
+          <div class="camera-body">
+            <div class="camera-scan-lines"></div>
+            <div class="camera-placeholder-content">
+              <lucide-angular name="video-off" [size]="20" class="camera-icon-placeholder" />
+              <p class="camera-title font-mono">FEED OFFLINE</p>
+              <p class="camera-note font-mono">Telemetry link prioritized due to low bandwidth.</p>
+              <p class="camera-tech font-mono">H.265 / 1080p / 60fps</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Mini fleet panel -->
         <div class="sidebar-fleet helm-panel">
           <div class="mini-fleet-hdr">

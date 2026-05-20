@@ -30,6 +30,7 @@ import { MissionDurationPipe } from '../../shared/pipes/mission-duration.pipe';
 import { FrameValuesPipe }     from '../../shared/pipes/frame-values.pipe';
 import { FleetStatusSortPipe }  from '../../shared/pipes/fleet-status-sort.pipe';
 import { RouterLink }           from '@angular/router';
+import { LucideAngularModule, VideoOff, LUCIDE_ICONS, LucideIconProvider } from 'lucide-angular';
 
 // Models
 import {
@@ -73,6 +74,14 @@ const NO_THRESHOLD: SensorThreshold = {
     FrameValuesPipe,
     FleetStatusSortPipe,
     RouterLink,
+    LucideAngularModule,
+  ],
+  providers: [
+    {
+      provide: LUCIDE_ICONS,
+      multi: true,
+      useValue: new LucideIconProvider({ VideoOff }),
+    },
   ],
   templateUrl: './dashboard.component.html',
   styleUrl:    './dashboard.component.scss',

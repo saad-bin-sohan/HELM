@@ -107,3 +107,14 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Responsive ──────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .fleet-header {
+    padding: 10px 14px;
+  }
+
+  .fleet-page {
+    gap: 8px;
+  }
+}

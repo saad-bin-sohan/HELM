@@ -1,4 +1,14 @@
-<aside class="alert-tray" [@traySlide] role="complementary" aria-label="Alerts panel">
+<aside class="alert-tray" [@traySlide] role="region" aria-label="Alert notifications">
+
+  <!-- Screen reader announcer — announces count changes without interrupting reading -->
+  <span class="sr-only" aria-live="polite" aria-atomic="true">
+    @if (unacknowledgedCount() > 0) {
+      {{ unacknowledgedCount() }} unacknowledged alert{{ unacknowledgedCount() === 1 ? '' : 's' }}
+    } @else {
+      All alerts acknowledged
+    }
+  </span>
+
   <header class="tray-header">
     <div class="tray-title-group">
       <h2 class="tray-title font-display">Alerts</h2>
@@ -36,6 +46,7 @@
           [class.active]="filterSeverity() === sev.value"
           [class.pill-warning]="sev.value === 'warning'"
           [class.pill-critical]="sev.value === 'critical'"
+          [attr.aria-pressed]="filterSeverity() === sev.value"
           (click)="filterSeverity.set($any(sev.value))"
         >
           {{ sev.label }}

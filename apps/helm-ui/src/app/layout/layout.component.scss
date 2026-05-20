@@ -31,3 +31,16 @@
   backdrop-filter: blur(1px);
   cursor: pointer;
 }
+
+// ── Responsive: reduce main scroll padding on mobile ─────────
+@media (max-width: 640px) {
+  .helm-main-scroll {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 375px) {
+  .helm-main-scroll {
+    padding: 8px 10px;
+  }
+}

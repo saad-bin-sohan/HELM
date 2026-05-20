@@ -1,5 +1,5 @@
 import {
-  Component, Input, OnChanges, ChangeDetectionStrategy,
+  Component, Input, OnChanges, ChangeDetectionStrategy, HostBinding,
 } from '@angular/core';
 import {
   type SensorThreshold, type ThresholdStatus, evaluateThreshold,
@@ -83,12 +83,21 @@ import {
   `],
 })
 export class GaugeComponent implements OnChanges {
+  @Input() label?: string;
   @Input({ required: true }) value!:     number | null;
   @Input({ required: true }) threshold!: SensorThreshold;
   @Input() max      = 100;
   @Input() min      = 0;
   @Input() unit     = '%';
   @Input() decimals = 0;
+
+  @HostBinding('attr.role') role = 'meter';
+  @HostBinding('attr.aria-valuemin') get ariaMin() { return this.min; }
+  @HostBinding('attr.aria-valuemax') get ariaMax() { return this.max; }
+  @HostBinding('attr.aria-valuenow') get ariaNow() { return this.value; }
+  @HostBinding('attr.aria-label') get hostAriaLabel() {
+    return this.label ? `${this.label}: ${this.displayValue}${this.unit}` : `${this.displayValue}${this.unit}`;
+  }
 
   // SVG circle math:
   // Circumference = 2π × 42 ≈ 263.89

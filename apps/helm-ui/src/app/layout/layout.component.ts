@@ -1,5 +1,5 @@
 import {
-  Component, signal, inject, DestroyRef, PLATFORM_ID,
+  Component, signal, inject, DestroyRef, PLATFORM_ID, ChangeDetectionStrategy,
 } from '@angular/core';
 import { isPlatformBrowser, AsyncPipe } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -18,6 +18,7 @@ import type { Alert } from '@helm/models';
 @Component({
   selector: 'helm-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterOutlet,
     AsyncPipe,

@@ -143,6 +143,26 @@ export class MissionLogComponent {
     return raw.filter((e) => e.type === filterVal);
   });
 
+  readonly alertMarkerPositions = computed(() => {
+    const events = this.historicalEvents();
+    if (events.length <= 1) return [];
+
+    const markers: Array<{ position: number; severity: string }> = [];
+    const maxIdx = events.length - 1;
+
+    for (let i = 0; i <= maxIdx; i++) {
+      const e = events[i];
+      if (e.type === 'alert_fired') {
+        const severity = String(e.data['severity'] ?? 'warning');
+        markers.push({
+          position: (i / maxIdx) * 100,
+          severity,
+        });
+      }
+    }
+    return markers;
+  });
+
   private readonly autoScrollDir = viewChild(AutoScrollDirective);
 
   constructor() {

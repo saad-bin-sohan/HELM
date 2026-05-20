@@ -5,7 +5,7 @@ import { AsyncPipe } from '@angular/common';
 import { Router }    from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
 import { map, startWith }            from 'rxjs/operators';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 import { FleetService }     from '../../core/services/fleet.service';
 import { TelemetryService } from '../../core/services/telemetry.service';
@@ -15,7 +15,7 @@ import { FleetCardComponent }  from '../../shared/components/fleet-card/fleet-ca
 import { FleetStatusSortPipe } from '../../shared/pipes/fleet-status-sort.pipe';
 import { TimeAgoPipe }         from '../../shared/pipes/time-ago.pipe';
 
-import type { Vehicle, Mission, TelemetryFrame } from '@helm/models';
+import type { Vehicle, Mission } from '@helm/models';
 
 interface FleetHealth {
   total: number; active: number; warning: number;
@@ -34,15 +34,17 @@ interface FleetVm {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports:         [AsyncPipe, FleetCardComponent, FleetStatusSortPipe, TimeAgoPipe],
   animations: [
-    trigger('cardSlide', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(-10px)' }),
-        animate('220ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
-      transition(':leave', [
-        animate('160ms ease-in', style({ opacity: 0, transform: 'translateY(8px)' })),
-      ]),
-    ]),
+    trigger('listAnimation', [
+      transition('* <=> *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(-10px)' }),
+          stagger('60ms', animate('220ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })))
+        ], { optional: true }),
+        query(':leave', [
+          stagger('40ms', animate('160ms ease-in', style({ opacity: 0, transform: 'translateY(8px)' })))
+        ], { optional: true })
+      ])
+    ])
   ],
   templateUrl: './fleet.component.html',
   styleUrl:    './fleet.component.scss',

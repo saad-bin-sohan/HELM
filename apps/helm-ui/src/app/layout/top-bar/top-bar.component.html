@@ -37,11 +37,13 @@
     <!-- Alert badge -->
     <button
       class="icon-btn"
-      aria-label="Toggle alert tray"
+      [attr.aria-label]="alertCount() > 0
+        ? alertCount() + ' unacknowledged alert' + (alertCount() === 1 ? '' : 's') + ' — toggle alert tray'
+        : 'Toggle alert tray'"
       [matBadge]="alertCount() > 0 ? alertCount() : null"
       matBadgeColor="warn"
       matBadgeSize="small"
-      [matTooltip]="alertCount() + ' unacknowledged alerts'"
+      [matTooltip]="alertCount() > 0 ? alertCount() + ' unacknowledged alerts' : 'No alerts'"
       (click)="alertTrayToggled.emit()"
     >
       <lucide-angular name="bell" [size]="16" />
@@ -55,7 +57,12 @@
       [class.offline]="connectionState().status === 'offline'"
       [class.connecting]="connectionState().status === 'connecting'"
       [matTooltip]="'WS ' + connectionState().status + ' · ' + connectionState().reconnectCount + ' reconnects'"
+      role="status"
     >
+      <!-- Invisible live region: announces connection state changes to screen readers -->
+      <span class="sr-only" aria-live="polite" aria-atomic="true">
+        WebSocket {{ connectionState().status }}
+      </span>
       @switch (connectionState().status) {
         @case ('live') {
           <lucide-angular name="wifi" [size]="11" />

@@ -47,10 +47,9 @@
     <!-- ══════════════════════════════════════════════════════
          FLEET CARD LIST — sorted by severity, animated
          ════════════════════════════════════════════════════ -->
-    <div class="fleet-card-list">
+    <div class="fleet-card-list" [@listAnimation]="vm.vehicles.length">
       @for (vehicle of vm.vehicles | fleetStatusSort; track vehicle.id) {
         <helm-fleet-card
-          [@cardSlide]
           [vehicle]="vehicle"
           [latestFrame]="latestFrames().get(vehicle.id) ?? null"
           [activeMission]="getMission(vm.missionMap, vehicle.id)"

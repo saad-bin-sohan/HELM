@@ -4,7 +4,7 @@
   [class.threshold-warning]="thresholdStatus === 'warning'"
   [class.threshold-critical]="thresholdStatus === 'critical'"
   role="figure"
-  [attr.aria-label]="meta.label + ': ' + displayValue + ' ' + meta.unit"
+  [attr.aria-label]="meta.label + ': ' + displayValue + ' ' + meta.unit + ', status: ' + thresholdStatus"
 >
 
   <!-- ── Header row: label + status dot ── -->
