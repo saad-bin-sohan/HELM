@@ -16,8 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         message: (error.error as Record<string, unknown>)?.['error'] as string ?? error.message,
         url:     error.url,
       };
-      // In Week 2, this will feed into a global toast notification service.
-      // For now, just re-throw in a normalized shape.
+      // Normalize API errors so callers receive a predictable shape.
       return throwError(() => normalized);
     }),
   );

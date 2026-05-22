@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Lint · Build · Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint — helm-ui
+        run: npx nx lint helm-ui
+
+      - name: Lint — helm-server
+        run: npx nx lint helm-server
+
+      - name: Build — helm-server (production)
+        run: npx nx build helm-server --configuration=production
+
+      - name: Build — helm-ui (production)
+        run: npx nx build helm-ui --configuration=production
+
+      - name: Test — helm-ui (with coverage)
+        run: npx nx test helm-ui --ci --coverage --coverageReporters=text-summary
+
+      - name: Test — helm-server (with coverage)
+        run: npx nx test helm-server --ci --passWithNoTests
