@@ -18,7 +18,10 @@ export class MissionService {
   readonly missions$: Observable<Mission[]> = this.missionsSubject.asObservable();
 
   constructor() {
-    this.loadMissions();
+    // Skip on SSR — no direct backend path from server context
+    if (typeof window !== 'undefined') {
+      this.loadMissions();
+    }
   }
 
   // ── Derived streams ────────────────────────────────────

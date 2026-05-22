@@ -65,24 +65,26 @@ export class AlertService {
   private audioCtx: AudioContext | null = null;
 
   constructor() {
-    // 1. Load server-side pre-seeded alerts (e.g. ROV-02 startup warnings)
-    this.http
-      .get<Alert[]>(`${this.apiUrl}/alerts`)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((serverAlerts) => {
-        this.alertsSubject.next(serverAlerts);
-        this.syncBadgeCount();
+    // 1. Load server-side pre-seeded alerts (e.g. ROV-02 startup warnings) — browser only
+    if (this.isBrowser) {
+      this.http
+        .get<Alert[]>(`${this.apiUrl}/alerts`)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((serverAlerts) => {
+          this.alertsSubject.next(serverAlerts);
+          this.syncBadgeCount();
 
-        // Seed sensor states from existing unresolved alerts so we don't
-        // re-generate alerts for already-active conditions
-        for (const alert of serverAlerts) {
-          if (!alert.resolvedAt) {
-            const key = this.sensorKey(alert.vehicleId, alert.sensor);
-            this.sensorStates.set(key, alert.severity as ThresholdStatus);
-            this.activeAlertIds.set(key, alert.id);
+          // Seed sensor states from existing unresolved alerts so we don't
+          // re-generate alerts for already-active conditions
+          for (const alert of serverAlerts) {
+            if (!alert.resolvedAt) {
+              const key = this.sensorKey(alert.vehicleId, alert.sensor);
+              this.sensorStates.set(key, alert.severity as ThresholdStatus);
+              this.activeAlertIds.set(key, alert.id);
+            }
           }
-        }
-      });
+        });
+    }
 
     // 2. Subscribe to all events and handle server-injected fault alerts
     this.telemetryService.events$

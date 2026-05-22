@@ -82,17 +82,19 @@ export class FleetService {
   });
 
   constructor() {
-    // 1. Load initial vehicle list from REST
-    this.http
-      .get<Vehicle[]>(`${this.apiUrl}/vehicles`)
-      .pipe(takeUntilDestroyed())
-      .subscribe((vehicles) => {
-        this.vehiclesSubject.next(vehicles);
-        // Default selection: first vehicle
-        if (!this.selectedVehicleId() && vehicles.length > 0) {
-          this.selectedVehicleId.set(vehicles[0].id);
-        }
-      });
+    // 1. Load initial vehicle list from REST — browser only
+    if (this.isBrowser) {
+      this.http
+        .get<Vehicle[]>(`${this.apiUrl}/vehicles`)
+        .pipe(takeUntilDestroyed())
+        .subscribe((vehicles) => {
+          this.vehiclesSubject.next(vehicles);
+          // Default selection: first vehicle
+          if (!this.selectedVehicleId() && vehicles.length > 0) {
+            this.selectedVehicleId.set(vehicles[0].id);
+          }
+        });
+    }
 
     // 2. Reactively update vehicle statuses from telemetry frames (via Signal effect)
     effect(() => {
