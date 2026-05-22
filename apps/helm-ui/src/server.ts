@@ -73,7 +73,7 @@ app.use('/**', (req, res, next) => {
 
 // ── Start server ──────────────────────────────────────────────────────────────
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
-  const port = process.env['PORT'] || 4000;
+  const port = Number(process.env['PORT'] || 4000);
   app.listen(port, '0.0.0.0', () => {
   console.log(`[HELM SSR] Angular server listening on http://0.0.0.0:${port}`);
   console.log(`[HELM SSR] API proxy → ${apiTarget} (BACKEND_URL or API_URL)`);
