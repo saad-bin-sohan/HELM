@@ -10,7 +10,11 @@ import { createMissionsRouter }       from './routes/missions';
 import { createAlertsRouter }         from './routes/alerts';
 import type { WsMessage }             from './types';
 
-const PORT = parseInt(process.env['PORT'] ?? '3000', 10);
+// BEFORE — breaks when PORT='' (empty string)
+// const PORT = parseInt(process.env['PORT'] ?? '3000', 10);
+
+// AFTER — || treats empty string as falsy, falls back to '3000'
+const PORT = parseInt(process.env['PORT'] || '3000', 10);
 
 // ─── Bootstrap ───────────────────────────────────────────
 const store = new DataStore();
