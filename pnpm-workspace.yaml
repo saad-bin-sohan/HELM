@@ -1,1 +1,40 @@
+# pnpm workspace configuration.
+# Reference: https://pnpm.io/pnpm-workspace_yaml
+#
+# --- allowBuilds ---------------------------------------------------------
+# Since pnpm v10, install/postinstall scripts are blocked by default
+# (supply-chain hardening) unless explicitly approved here. Every package
+# below was checked with `pnpm why <pkg>` before being approved here -- each
+# is a real, legitimately-required native build tool pulled in by this
+# workspace's own toolchain, not an unexpected transitive dependency:
+#
+#   @parcel/watcher   - native FS watcher, pulled in via sass -> @angular-devkit/build-angular
+#   @swc/core         - native compiler; direct devDependency, also used by Nx (@swc-node/register)
+#   esbuild           - native bundler used by the Angular build pipeline
+#   less              - Less CSS compiler used by the Angular build pipeline
+#   lmdb              - native dependency of the Angular build pipeline (@angular/build)
+#   msgpackr-extract  - native helper required by msgpackr, which lmdb depends on
+#   nx                - Nx CLI's own postinstall script; direct devDependency
+#   unrs-resolver     - native resolver required by jest-resolve (Jest's module resolution)
+#
+# Without this block, a genuinely fresh, non-interactive `pnpm install`
+# (a new clone, CI, or either Dockerfile's builder stage) fails hard with
+# ERR_PNPM_IGNORED_BUILDS -- there is no terminal available anywhere in
+# those contexts to answer pnpm's interactive approval prompt.
+#
+# If a future dependency change introduces a NEW package with an
+# unapproved build script, install will fail the same way again. Audit
+# what the new script actually does, then regenerate this list with:
+#   pnpm approve-builds
+# Note: that command rewrites this file from scratch and will NOT preserve
+# these comments -- re-add the relevant lines afterwards.
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  less: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  unrs-resolver: true
 autoInstallPeers: true
