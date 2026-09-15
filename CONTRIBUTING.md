@@ -8,7 +8,7 @@ structure, development workflow, and conventions used in the project.
 | Tool | Version | Notes |
 |------|---------|-------|
 | Node.js | 20.x LTS | Required for NX, Angular, and the server |
-| pnpm | latest | `npm install -g pnpm` |
+| pnpm | Pinned via Corepack | `corepack enable` (version comes from `package.json`) |
 | Docker | 24+ | Optional — only needed for containerised dev |
 
 ## Repository Structure
@@ -38,6 +38,7 @@ helm/                            ← NX workspace root
 # Clone and install
 git clone https://github.com/YOUR_GITHUB_USERNAME/HELM_Hardware-Environment-Live-Monitor.git
 cd HELM_Hardware-Environment-Live-Monitor
+corepack enable   # one-time per machine
 pnpm install
 
 # Start both apps in parallel

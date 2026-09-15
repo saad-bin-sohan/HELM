@@ -246,8 +246,9 @@ Open `http://localhost:4000` (dev) or `http://localhost` (prod).
 ### Option B — Manual (native Node.js)
 
 ```bash
-# Prerequisites: Node.js 20 LTS, pnpm
-npm install -g pnpm
+# Prerequisites: Node.js 20 LTS (ships Corepack)
+corepack enable   # one-time per machine; activates the exact pnpm
+                   # version pinned in package.json's "packageManager" field
 
 git clone https://github.com/saad-bin-sohan/HELM_Hardware-Environment-Live-Monitor.git
 cd HELM_Hardware-Environment-Live-Monitor
@@ -464,7 +465,7 @@ throttling and the mobile profile.
 | Technology | Version | Role |
 |-----------|---------|------|
 | NX | 22.7 | Monorepo management — project graph, task caching, path aliases |
-| pnpm | latest | Fast, disk-efficient package manager |
+| pnpm | Pinned via Corepack (see `package.json`) | Fast, disk-efficient package manager |
 | Docker | 24+ | Multi-stage builds for both apps |
 | nginx | alpine | Reverse proxy — WebSocket upgrade, gzip, asset caching |
 | TypeScript | 5.9 | Strict mode throughout — zero `any` types |

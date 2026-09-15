@@ -10,11 +10,22 @@ LABEL stage="builder"
 
 WORKDIR /app
 
-RUN npm install -g pnpm
+# Enable Corepack's shims. This has no dependency on any copied file, so it
+# stays cached across every rebuild. It does not fetch or pin a pnpm version
+# by itself -- that happens in `corepack install` below, once package.json
+# (and its "packageManager" field) has been copied in.
+RUN corepack enable
 
 # Copy workspace manifests (layer cache optimisation)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY nx.json tsconfig.base.json ./
+
+# Fetch and activate the exact pnpm version declared in package.json's
+# "packageManager" field. That field is the single source of truth for the
+# pnpm version across Docker, CI, and local dev (see ENV-02) -- the version
+# is intentionally NOT repeated as a literal here, so there is exactly one
+# place to bump it in future.
+RUN corepack install
 
 RUN pnpm install --frozen-lockfile
 

@@ -12,13 +12,23 @@ LABEL stage="builder"
 
 WORKDIR /app
 
-# Install pnpm BEFORE copying files so this layer is cached
-RUN npm install -g pnpm
+# Enable Corepack's shims BEFORE copying files so this layer is cached. This
+# does not fetch or pin a pnpm version by itself -- that happens in
+# `corepack install` below, once package.json (and its "packageManager"
+# field) has been copied in.
+RUN corepack enable
 
 # Copy workspace-level manifests first (best layer-caching practice).
 # Changing source code won't invalidate the pnpm install layer.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY nx.json tsconfig.base.json jest.preset.js ./
+
+# Fetch and activate the exact pnpm version declared in package.json's
+# "packageManager" field. That field is the single source of truth for the
+# pnpm version across Docker, CI, and local dev (see ENV-02) -- the version
+# is intentionally NOT repeated as a literal here, so there is exactly one
+# place to bump it in future.
+RUN corepack install
 
 # Install ALL workspace dependencies (including devDeps needed for NX build)
 # --frozen-lockfile ensures reproducible installs
@@ -39,13 +49,18 @@ LABEL stage="runner"
 
 WORKDIR /app
 
-# Install pnpm for production dependency install
-RUN npm install -g pnpm
+# Enable Corepack's shims for the production dependency install below.
+RUN corepack enable
 
 # Copy workspace manifests for production install
 # pnpm install --prod installs only non-devDependencies from package.json.
 # This includes: express, http-proxy-middleware, @angular/ssr, rxjs, etc.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Fetch and activate the exact pnpm version declared in package.json's
+# "packageManager" field -- same single source of truth as the builder
+# stage above (see ENV-02).
+RUN corepack install
 
 # Install production dependencies only
 # --ignore-scripts: security best practice in Docker
