@@ -2,7 +2,7 @@ import {
   Component, ChangeDetectionStrategy, inject, signal,
   PLATFORM_ID, DestroyRef, OnInit,
 } from '@angular/core';
-import { isPlatformBrowser, AsyncPipe, DecimalPipe, JsonPipe, UpperCasePipe } from '@angular/common';
+import { isPlatformBrowser, JsonPipe, UpperCasePipe } from '@angular/common';
 import {
   ReactiveFormsModule, FormBuilder, Validators,
 } from '@angular/forms';
@@ -21,7 +21,7 @@ import {
 } from 'lucide-angular';
 import { AlertService }    from '../../core/services/alert.service';
 import { WebSocketService } from '../../core/services/websocket.service';
-import { environment }     from '@helm/env';
+import { environment }     from '../../../environments/environment';
 import {
   DEFAULT_THRESHOLDS, type AlertableSensorKey,
 } from '@helm/models';
@@ -32,8 +32,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    AsyncPipe,
-    DecimalPipe,
     JsonPipe,
     UpperCasePipe,
     MatButtonModule,

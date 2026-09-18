@@ -55,7 +55,7 @@
           [activeMission]="getMission(vm.missionMap, vehicle.id)"
           [isSelected]="selectedId() === vehicle.id"
           [compact]="false"
-          (select)="onVehicleSelect($event)"
+          (vehicleSelected)="onVehicleSelect($event)"
         />
       }
 

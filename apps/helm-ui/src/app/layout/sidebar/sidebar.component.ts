@@ -2,7 +2,6 @@ import {
   Component, Input, Output, EventEmitter, ChangeDetectionStrategy, inject,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NgClass }              from '@angular/common';
 import { MatTooltipModule }     from '@angular/material/tooltip';
 import { MatRippleModule }      from '@angular/material/core';
 import { MatBadgeModule }       from '@angular/material/badge';
@@ -25,7 +24,6 @@ export interface NavItem {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
     RouterLink,
     RouterLinkActive,
     MatTooltipModule,

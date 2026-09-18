@@ -23,6 +23,20 @@ export default [
           ],
         },
       ],
+      // A leading underscore marks an intentionally-unused binding (e.g. a
+      // signal read purely to register a reactive dependency in computed()/
+      // effect(), or a lifecycle-hook parameter the implementation doesn't
+      // need). Recognize the convention workspace-wide instead of asking
+      // every call site to either consume the value or delete the binding.
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
     },
   },
   {

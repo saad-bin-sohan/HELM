@@ -4,6 +4,9 @@
   "sourceRoot": "apps/helm-server/src",
   "projectType": "application",
   "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],

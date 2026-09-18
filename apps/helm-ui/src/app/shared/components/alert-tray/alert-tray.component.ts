@@ -64,11 +64,11 @@ export class AlertTrayComponent implements OnChanges {
   @Input() alerts: Alert[] = [];
   @Output() acknowledge    = new EventEmitter<string>();   // alertId
   @Output() acknowledgeAll = new EventEmitter<void>();
-  @Output() close          = new EventEmitter<void>();
+  @Output() closeTray      = new EventEmitter<void>();
 
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
-    this.close.emit();
+    this.closeTray.emit();
   }
 
   readonly filterSeverity = signal<AlertSeverity | 'all'>('all');

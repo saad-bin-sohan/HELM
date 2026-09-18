@@ -245,7 +245,7 @@
                 [latestFrame]="latestFrames().get(v.id) ?? null"
                 [isSelected]="fleet.selectedVehicleId() === v.id"
                 [compact]="true"
-                (select)="fleet.selectVehicle($event)"
+                (vehicleSelected)="fleet.selectVehicle($event)"
               />
             }
           </div>

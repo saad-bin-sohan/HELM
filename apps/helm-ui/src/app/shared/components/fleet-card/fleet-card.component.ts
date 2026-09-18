@@ -13,8 +13,8 @@ import type { Vehicle, TelemetryFrame, Mission } from '@helm/models';
  *  • compact=false (default): full card for the /fleet page, shows all info
  *  • compact=true: condensed card for the dashboard sidebar mini fleet panel
  *
- * Emits (select) with vehicleId when clicked — parent decides what to do
- * (select in service, navigate to dashboard, etc.)
+ * Emits (vehicleSelected) with vehicleId when clicked — parent decides what
+ * to do (select in service, navigate to dashboard, etc.)
  *
  * Angular animation [@cardSlide] fires on :enter/:leave.
  * The parent's @for + FleetStatusSortPipe drives the reorder; as items
@@ -45,7 +45,7 @@ export class FleetCardComponent {
   @Input() activeMission: Mission | undefined;
   @Input() isSelected  = false;
   @Input() compact     = false;
-  @Output() select = new EventEmitter<string>();
+  @Output() vehicleSelected = new EventEmitter<string>();
 
   get batteryPct(): number {
     return Math.round(this.latestFrame?.battery ?? 0);
@@ -68,6 +68,6 @@ export class FleetCardComponent {
   }
 
   onSelect(): void {
-    this.select.emit(this.vehicle.id);
+    this.vehicleSelected.emit(this.vehicle.id);
   }
 }

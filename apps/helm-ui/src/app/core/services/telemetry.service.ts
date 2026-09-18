@@ -3,7 +3,7 @@ import { Observable, filter, map, scan, share, shareReplay } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { WebSocketService } from './websocket.service';
 import type { TelemetryFrame, WsMessage, MissionEvent } from '@helm/models';
-import { environment } from '@helm/env';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TelemetryService {

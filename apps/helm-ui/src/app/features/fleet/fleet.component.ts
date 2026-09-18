@@ -13,7 +13,6 @@ import { MissionService }   from '../../core/services/mission.service';
 
 import { FleetCardComponent }  from '../../shared/components/fleet-card/fleet-card.component';
 import { FleetStatusSortPipe } from '../../shared/pipes/fleet-status-sort.pipe';
-import { TimeAgoPipe }         from '../../shared/pipes/time-ago.pipe';
 
 import type { Vehicle, Mission } from '@helm/models';
 
@@ -32,7 +31,7 @@ interface FleetVm {
   selector:        'helm-fleet',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [AsyncPipe, FleetCardComponent, FleetStatusSortPipe, TimeAgoPipe],
+  imports:         [AsyncPipe, FleetCardComponent, FleetStatusSortPipe],
   animations: [
     trigger('listAnimation', [
       transition('* <=> *', [

@@ -23,7 +23,7 @@
     [alerts]="(alertService.alerts$ | async) ?? []"
     (acknowledge)="onAcknowledge($event)"
     (acknowledgeAll)="onAcknowledgeAll()"
-    (close)="alertTrayOpen.set(false)"
+    (closeTray)="alertTrayOpen.set(false)"
   />
   <div
     class="tray-backdrop"

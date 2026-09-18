@@ -11,7 +11,7 @@ import {
   type Vehicle, type VehicleStatus, type TelemetryFrame,
   type AlertableSensorKey, DEFAULT_THRESHOLDS, evaluateThreshold,
 } from '@helm/models';
-import { environment } from '@helm/env';
+import { environment } from '../../../environments/environment';
 
 // ── Pure status derivation (module-level, no injection needed) ──
 const ALERTABLE_SENSORS: AlertableSensorKey[] = [

@@ -2,7 +2,7 @@ import {
   Component, ChangeDetectionStrategy, OnDestroy, inject,
   signal, computed, effect, PLATFORM_ID, afterNextRender, DestroyRef,
 } from '@angular/core';
-import { isPlatformBrowser, DecimalPipe, AsyncPipe } from '@angular/common';
+import { isPlatformBrowser, DecimalPipe } from '@angular/common';
 import {
   FormBuilder, FormArray, FormGroup, Validators, ReactiveFormsModule,
 } from '@angular/forms';
@@ -59,7 +59,6 @@ interface WaypointFormValue {
   imports: [
     ReactiveFormsModule,
     DecimalPipe,
-    AsyncPipe,
     DragDropModule,
     MatButtonModule,
     MatInputModule,

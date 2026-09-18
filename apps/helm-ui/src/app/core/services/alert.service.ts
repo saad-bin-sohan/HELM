@@ -12,7 +12,7 @@ import {
   type AlertableSensorKey, type SensorThreshold, type ThresholdStatus,
   DEFAULT_THRESHOLDS, evaluateThreshold,
 } from '@helm/models';
-import { environment } from '@helm/env';
+import { environment } from '../../../environments/environment';
 
 const ALERTABLE_SENSORS: AlertableSensorKey[] = [
   'depth', 'speed', 'battery', 'thrust', 'waterTemp', 'pressure', 'roll', 'pitch',

@@ -4,7 +4,7 @@ import { Observable, finalize } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
 import type { Command, CommandType, CommandAck } from '@helm/models';
-import { environment } from '@helm/env';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CommandService {

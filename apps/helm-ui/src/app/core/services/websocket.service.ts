@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject, Observable } from 'rxjs';
-import { environment } from '@helm/env';
+import { environment } from '../../../environments/environment';
 import type { WsMessage, ConnectionState, ConnectionStatus } from '@helm/models';
 
 @Injectable({ providedIn: 'root' })

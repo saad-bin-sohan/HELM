@@ -10,8 +10,9 @@
 
   @if (!activeMission && plannedMissions.length > 0) {
     <div class="mission-selector">
-      <label class="selector-label font-mono">SELECT MISSION</label>
+      <label class="selector-label font-mono" [attr.for]="'mission-select-' + vehicleId">SELECT MISSION</label>
       <select
+        [id]="'mission-select-' + vehicleId"
         class="mission-select font-mono"
         [value]="selectedMissionId()"
         (change)="selectedMissionId.set($any($event.target).value)"
@@ -56,10 +57,11 @@
 
   @if (activeInlineInput() === 'heading') {
     <div class="inline-input-row">
-      <label class="inline-label font-mono">BEARING (0–360°)</label>
+      <label class="inline-label font-mono" [attr.for]="'heading-input-' + vehicleId">BEARING (0–360°)</label>
       <div class="inline-input-group">
         <input
           type="number"
+          [id]="'heading-input-' + vehicleId"
           class="inline-input font-mono"
           [ngModel]="headingInput()"
           (ngModelChange)="headingInput.set($event)"
@@ -74,10 +76,11 @@
 
   @if (activeInlineInput() === 'speed') {
     <div class="inline-input-row">
-      <label class="inline-label font-mono">SPEED (0.5–10 kn)</label>
+      <label class="inline-label font-mono" [attr.for]="'speed-input-' + vehicleId">SPEED (0.5–10 kn)</label>
       <div class="inline-input-group">
         <input
           type="number"
+          [id]="'speed-input-' + vehicleId"
           class="inline-input font-mono"
           [ngModel]="speedInput()"
           (ngModelChange)="speedInput.set($event)"

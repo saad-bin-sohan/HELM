@@ -2,7 +2,6 @@ import {
   Component, Input, OnChanges, SimpleChanges,
   ChangeDetectionStrategy, signal,
 } from '@angular/core';
-import { DecimalPipe }    from '@angular/common';
 import { GaugeComponent } from '../gauge/gauge.component';
 import { SparklineComponent } from '../sparkline/sparkline.component';
 import { ThresholdColorDirective } from '../../directives/threshold-color.directive';
@@ -41,7 +40,7 @@ const SENSOR_META: Record<MetricSensor, SensorMeta> = {
   selector:        'helm-metric-card',
   standalone:      true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports:         [DecimalPipe, GaugeComponent, SparklineComponent, ThresholdColorDirective],
+  imports:         [GaugeComponent, SparklineComponent, ThresholdColorDirective],
   templateUrl:     './metric-card.component.html',
   styleUrl:        './metric-card.component.scss',
 })

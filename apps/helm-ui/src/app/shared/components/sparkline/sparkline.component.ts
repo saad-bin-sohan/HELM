@@ -69,9 +69,9 @@ export class SparklineComponent implements OnChanges {
   // Unique gradient id so multiple sparklines on the same page don't clash
   protected readonly gradId = `sg-${Math.random().toString(36).slice(2, 7)}`;
 
-  protected lineD: string       = '';
-  protected areaD: string       = '';
-  protected color: string       = 'var(--color-accent)';
+  protected lineD         = '';
+  protected areaD         = '';
+  protected color         = 'var(--color-accent)';
   protected dotX:  number | null = null;
   protected dotY:  number | null = null;
 
